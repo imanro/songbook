@@ -16,7 +16,7 @@
 	"zendframework/zend-console": "2.3.*",
 	"zendframework/zend-crypt": "2.3.*",
 	"zendframework/zend-db": "2.3.*",
-	"zendframework/zend-developer-tools": "2.3.*",
+	"zendframework/zend-developer-tools": "dev-master",
 	"zendframework/zend-di": "2.3.*",
 	"zendframework/zend-escaper": "2.3.*",
 	"zendframework/zend-eventmanager": "2.3.*",

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "61d42233802fd92feca32de2658c1f56",
+    "hash": "e785228d4718258826f8abdca59f85e8",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1146,6 +1146,121 @@
                 "source": "https://github.com/zendframework/Component_ZendDb/tree/release-2.3.3"
             },
             "time": "2014-09-16 22:58:11"
+        },
+        {
+            "name": "zendframework/zend-debug",
+            "version": "2.3.3",
+            "target-dir": "Zend/Debug",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/Component_ZendDebug.git",
+                "reference": "47a6e38a12c586ab8097fa01e68a60cbbfc77043"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-debug-47a6e38a12c586ab8097fa01e68a60cbbfc77043-zip-656e4a.zip",
+                "reference": "2.3.3",
+                "shasum": "f211fb2d6bab851d9eebf9d2e00696f4e5f2b152"
+            },
+            "require": {
+                "php": ">=5.3.23"
+            },
+            "require-dev": {
+                "zendframework/zend-escaper": "*"
+            },
+            "suggest": {
+                "ext/xdebug": "XDebug, for better backtrace output",
+                "zendframework/zend-escaper": "To support escaped output"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev",
+                    "dev-develop": "2.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Zend\\Debug\\": ""
+                }
+            },
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": " ",
+            "homepage": "https://github.com/zendframework/zf2",
+            "keywords": [
+                "debug",
+                "zf2"
+            ],
+            "support": {
+                "source": "https://github.com/zendframework/Component_ZendDebug/tree/release-2.3.3"
+            },
+            "time": "2014-09-16 22:58:11"
+        },
+        {
+            "name": "zendframework/zend-developer-tools",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/ZendDeveloperTools.git",
+                "reference": "6468ed1c58a65ad797f04ebe794ca85fef0ff142"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zend-developer-tools-6468ed1c58a65ad797f04ebe794ca85fef0ff142-zip-73e483.zip",
+                "reference": "dev-master",
+                "shasum": "1e254d3f8589bb5e4fdca32c33fecab5088ec298"
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "zendframework/zend-debug": "2.*",
+                "zendframework/zend-eventmanager": "2.*",
+                "zendframework/zend-mvc": "2.*",
+                "zendframework/zend-servicemanager": "2.*",
+                "zendframework/zend-stdlib": "2.*",
+                "zendframework/zend-version": "2.*"
+            },
+            "suggest": {
+                "bjyoungblood/bjy-profiler": "Version: dev-master, allows the usage of the (Zend) Db collector.",
+                "ocramius/ocra-service-manager": "OcraServiceManager can help you track dependencies within your application."
+            },
+            "type": "zf-module",
+            "autoload": {
+                "psr-0": {
+                    "ZendDeveloperTools": "src/"
+                },
+                "classmap": [
+                    "./Module.php"
+                ]
+            },
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Evan Coury",
+                    "email": "me@evancoury.com",
+                    "homepage": "http://blog.evan.pro/"
+                },
+                {
+                    "name": "Eric Boh",
+                    "email": "cossish@gmail.com"
+                }
+            ],
+            "description": "Module for developer and debug tools for working with the ZF2 MVC layer.",
+            "homepage": "https://github.com/zendframework/ZendDeveloperTools",
+            "keywords": [
+                "debug",
+                "developer",
+                "module",
+                "zf2"
+            ],
+            "support": {
+                "source": "https://github.com/zendframework/ZendDeveloperTools/tree/master",
+                "issues": "https://github.com/zendframework/ZendDeveloperTools/issues"
+            },
+            "time": "2014-08-13 19:03:31"
         },
         {
             "name": "zendframework/zend-di",
@@ -2892,9 +3007,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "zendframework/zend-developer-tools": 20
+    },
     "prefer-stable": false,
     "platform": [
 
