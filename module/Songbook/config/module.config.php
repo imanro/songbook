@@ -1,5 +1,5 @@
 <?php
-return array(
+$conf = array(
     'controllers' => array(
         'invokables' => array(
             'Songbook\Controller\Song' => 'Songbook\Controller\SongController'
@@ -25,10 +25,29 @@ return array(
             )
         )
     ),
+
     'view_manager' => array(
         'template_path_stack' => array(
             'songbook' => __DIR__ . '/../view'
         )
+    ),
+
+    'doctrine' => array(
+        'driver' => array(
+            'song_entity' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'paths' => array(
+                    __DIR__ . '/../src/Songbook/Entity'
+                )
+            ),
+
+            'orm_default' => array(
+                'drivers' => array(
+                    'Songbook\Entity' => 'song_entity'
+                )
+            )
+        )
     )
 );
 
+return $conf;
