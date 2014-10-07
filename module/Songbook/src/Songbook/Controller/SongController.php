@@ -8,7 +8,6 @@ class SongController extends AbstractActionController
 {
 
     /**
-     *
      * @var DoctrineORMEntityManager
      */
     protected $em;
@@ -33,16 +32,6 @@ class SongController extends AbstractActionController
                 ));
     }
 
-    public function indexAction ()
-    {
-        return new ViewModel(
-                array(
-                    'songs' => $this->getEntityManager()
-                        ->getRepository('Songbook\Entity\Song')
-                        ->findAll()
-                ));
-    }
-
     public function editAction ()
     {}
 
@@ -55,7 +44,6 @@ class SongController extends AbstractActionController
         }
 
         return array(
-            'id' => $id,
             'song' => $this->getEntityManager()->find('Songbook\Entity\Song',
                     $id)
         );

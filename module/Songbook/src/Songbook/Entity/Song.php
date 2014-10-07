@@ -12,19 +12,22 @@ use Zend\InputFilter\InputFilterInterface;
 /**
  * @ORM\Entity
  * @ORM\Table(name="song")
+ *
+ * @property int $id
+ * @property string $title
+ *
  **/
 class Song implements InputFilterAwareInterface {
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer");
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @var int
      */
     protected $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      */
     protected $title;

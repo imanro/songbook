@@ -1,1 +1,4 @@
-index
+<?php foreach($songs as $song):?>
+<?php /* @var $song \Songbook\Entity\Song */?>
+<?php var_dump( $song->id ); ?>
+<?php endforeach; ?>
