@@ -1,6 +1,6 @@
 <?php
 
-namespace Songbook;
+namespace Ez;
 
 class Module
 {
@@ -17,6 +17,6 @@ class Module
 
     public function getConfig ()
     {
-        return include __DIR__ . '/config/module.config.php';
+        return array();
     }
 }
