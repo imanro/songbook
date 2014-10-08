@@ -14,10 +14,10 @@ use Zend\InputFilter\InputFilterInterface;
  * @ORM\Table(name="song")
  *
  * @property int $id
- * @property string $title
+ * @property string $name
  *
  **/
-class Song implements InputFilterAwareInterface {
+class Tag implements InputFilterAwareInterface {
 
     /**
      * @ORM\Id
@@ -30,29 +30,20 @@ class Song implements InputFilterAwareInterface {
     /**
      * @ORM\Column(type="string")
      */
-    protected $title;
+    protected $name;
 
     /**
      * @var InputFilter
      */
     protected $inputFilter;
 
-     /**
-     * @ORM\ManyToMany(targetEntity="Tag")
-     * @ORM\JoinTable(name="tags_songs",
-     *      joinColumns={@ORM\JoinColumn(name="song_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
-     *      )
-     **/
-    private $tags;
-
-     /**
+    /**
      * Magic getter to expose protected properties.
      *
      * @param string $property
      * @return mixed
      */
-    public function __get($property)
+    public function __get ($property)
     {
         return $this->$property;
     }
@@ -87,7 +78,7 @@ class Song implements InputFilterAwareInterface {
     {
         $this->id = $data['id'];
         $this->artist = $data['artist'];
-        $this->title = $data['title'];
+        $this->name = $data['name'];
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)
@@ -113,7 +104,7 @@ class Song implements InputFilterAwareInterface {
 
             $inputFilter->add(
                     array(
-                        'name' => 'title',
+                        'name' => 'name',
                         'required' => true,
                         'filters' => array(
                             array(
@@ -139,10 +130,5 @@ class Song implements InputFilterAwareInterface {
         }
 
         return $this->inputFilter;
-    }
-
-    public function addTag(Tag $tag)
-    {
-        $this->tags[] = $tag;
     }
 }
