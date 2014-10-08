@@ -11,7 +11,7 @@ use Zend\InputFilter\InputFilterInterface;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="song")
+ * @ORM\Table(name="tag")
  *
  * @property int $id
  * @property string $name

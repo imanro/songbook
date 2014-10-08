@@ -8,9 +8,13 @@ use Doctrine\ORM\EntityManager;
 
 class TagController extends AbstractActionController
 {
-    public function get()
+    public function addAction()
     {
-        $name = $this->getRequest()->getPost('name');
-        // search such tags, limit 10
+        return $this->forward()->dispatch('Tag', array('action' => 'edit', 'id' => $this->params('id', null ) ));
+    }
+
+    public function editAction()
+    {
+        $id = $this->params('id', null );
     }
 }
