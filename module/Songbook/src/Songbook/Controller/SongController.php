@@ -1,5 +1,6 @@
 <?php
 namespace Songbook\Controller;
+use Songbook\Form\SongEditForm;       // <-- Add this import
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Doctrine\ORM\EntityManager;
@@ -32,8 +33,23 @@ class SongController extends AbstractActionController
                 ));
     }
 
+    public function addAction ()
+    {
+        return $this->forward()->dispatch('Song', array(
+            'action' => 'edit',
+            'id' => $this->params('id', null)
+        ));
+    }
+
     public function editAction ()
-    {}
+    {
+        $id = $this->params('id', null);
+        $form = new SongEditForm();
+
+        return array(
+          'form' => $form
+        );
+    }
 
     public function viewAction ()
     {
@@ -44,7 +60,7 @@ class SongController extends AbstractActionController
         }
 
         return array(
-            'song' => $this->getEntityManager()->find('Songbook\Entity\Song',
+            'form' => $this->getEntityManager()->find('Songbook\Entity\Song',
                     $id)
         );
     }
