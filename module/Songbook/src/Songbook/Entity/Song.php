@@ -85,8 +85,6 @@ class Song implements InputFilterAwareInterface {
      */
     public function exchangeArray ($data = array())
     {
-        $this->id = $data['id'];
-        $this->artist = $data['artist'];
         $this->title = $data['title'];
     }
 
@@ -103,7 +101,7 @@ class Song implements InputFilterAwareInterface {
             $inputFilter->add(
                     array(
                         'name' => 'id',
-                        'required' => true,
+                        'required' => false,
                         'filters' => array(
                             array(
                                 'name' => 'Int'
@@ -128,7 +126,7 @@ class Song implements InputFilterAwareInterface {
                                 'name' => 'StringLength',
                                 'options' => array(
                                     'encoding' => 'UTF-8',
-                                    'min' => 1,
+                                    'min' => 2,
                                     'max' => 100
                                 )
                             )

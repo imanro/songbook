@@ -2,12 +2,13 @@
 
 namespace Songbook\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Ez\Api\Controller;
+use Ez\Api\Request;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Doctrine\ORM\EntityManager;
 
-class TagAjaxController extends AbstractActionController
+class TagAjaxController extends Controller
 {
     public function indexAction()
     {
@@ -15,13 +16,12 @@ class TagAjaxController extends AbstractActionController
 
     public function searchAction()
     {
-        $name = $this->getRequest()->getPost('name');
-            // search such tags, limit 10
-        $result = new JsonModel(array(
-            'some_parameter' => 'some value',
-            'success' => true
-        ));
+        $request = $this->getRequest();
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(array('term' => true));
+        $request->validate();
 
-        return $result;
+        $name = $this->getRequest()->getParam('term');
+        return $response = $this->getResponse()->prepareError('missing something');
     }
 }
