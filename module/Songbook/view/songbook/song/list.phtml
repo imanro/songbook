@@ -1,0 +1,6 @@
+<ul>
+<?php foreach( $songs as $song ): ?>
+<?php /* @var $song \Songbook\Entity\Song */ ?>
+<li><?= $song->title; ?></li>
+<?php endforeach; ?>
+</ul>

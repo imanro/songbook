@@ -6,6 +6,9 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Doctrine\ORM\EntityManager;
 
+/**
+ * @author manro
+ */
 class SongController extends AbstractActionController
 {
 
@@ -14,6 +17,9 @@ class SongController extends AbstractActionController
      */
     protected $em;
 
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
     public function getEntityManager ()
     {
         if (null === $this->em) {
@@ -83,9 +89,20 @@ class SongController extends AbstractActionController
             return $this->redirect()->toRoute('songbook');
         }
 
+        $song = $this->getEntityManager()->find('Songbook\Entity\Song', $id);
+
         return array(
-            'album' => $this->getEntityManager()->find('Songbook\Entity\Song',
-                    $id)
+            'song' => $song
+        );
+    }
+
+    public function listAction ()
+    {
+        // take all songs
+        $songs = $this->getEntityManager()->getRepository('Songbook\Entity\Song')->findAll();
+
+        return array(
+          'songs' => $songs
         );
     }
 
