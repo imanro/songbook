@@ -4,6 +4,7 @@ $conf = array(
         'invokables' => array(
             'Song' => 'Songbook\Controller\SongController',
             'SongAjax' => 'Songbook\Controller\SongAjaxController',
+            'SongConsole' => 'Songbook\Controller\SongConsoleController',
             'Tag' => 'Songbook\Controller\TagController',
             'TagAjax' => 'Songbook\Controller\TagAjaxController',
             'List' => 'Songbook\Controller\ListController',
@@ -44,6 +45,22 @@ $conf = array(
                     )
                 )
             ),
+        )
+    ),
+
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                'import-songs' => array(
+                    'options' => array(
+                        'route' => 'import-songs (db|csv)',
+                        'defaults' => array(
+                            'controller' => 'SongConsole',
+                            'action' => 'import'
+                        )
+                    )
+                )
+             )
         )
     ),
 

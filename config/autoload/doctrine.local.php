@@ -21,8 +21,9 @@ return array(
                     'user' => 'songbook',
                     'password' => 'songbook',
                     'dbname' => 'songbook'
-                )
+                ),
             )
         )
     )
 );
+

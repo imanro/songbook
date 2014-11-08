@@ -33,6 +33,16 @@ class Song implements InputFilterAwareInterface {
     protected $title;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    protected $author;
+
+    /**
+     * @ORM\Column(type="timestamp")
+     */
+    protected $create_time;
+
+    /**
      * @var InputFilter
      */
     protected $inputFilter;
@@ -142,5 +152,15 @@ class Song implements InputFilterAwareInterface {
     public function addTag(Tag $tag)
     {
         $this->tags[] = $tag;
+    }
+
+    public function importDb()
+    {
+
+    }
+
+    public function importCsv($filename)
+    {
+
     }
 }
