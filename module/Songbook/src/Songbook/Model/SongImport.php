@@ -10,6 +10,9 @@ use PDO;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Songbook\Entity\Song;
+use Songbook\Entity\Concert;
+use Songbook\Entity\Profile;
+use Songbook\Entity\User;
 
 class SongImport {
 
@@ -39,7 +42,6 @@ class SongImport {
 
         $sqlString = $sql->getSqlStringForSqlObject($select);
 
-
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
         $results = $importAdapter->query($sqlString, $importAdapter::QUERY_MODE_EXECUTE, $resultSet );
 
@@ -56,11 +58,15 @@ class SongImport {
             }
         }
 
-        die('import from database');
+        return true;
     }
 
     public function importCsv()
     {
+        $string = '5.09.13';
+        $timestamp = $this->getTimestamp($string);
+        $timestampSunday = $this->getNextSundayTimestamp($timestamp);
+        var_dump(date('D, j.m.Y', $timestampSunday));
         die('import from csv file');
     }
 
@@ -106,4 +112,85 @@ class SongImport {
         return $newArray;
     }
 
+    /**
+     * @param string $title
+     * @return Ambigous \Songbook\Entity\Song|null
+     */
+    protected function findSongByTitle ($title)
+    {
+        $em = $this->getEntityManager();
+        return $em->getRepository('Songbook\Entity\Song')->findOneBy(
+                array(
+                    'title' => $title
+                ));
+    }
+
+    /**
+     * @param array $data
+     * @return \Songbook\Entity\Song
+     */
+    protected function createSong (array $data)
+    {
+        $em = $this->getEntityManager();
+        $data = $this->prepareImportDbArray($data);
+        $song = new Song();
+        $song->exchangeArray($data);
+        $em->persist($song);
+        $em->flush();
+        return $song;
+    }
+
+    protected function getTimestamp($string)
+    {
+        $array = explode('.', $string);
+
+        if(count($array) != 3) {
+            throw new \Exception('wrong format');
+        }
+
+        @list($day, $month, $year) = $array;
+        $day = (int)$day;
+        $month = (int)$month;
+
+        if (mb_strlen($year) == 2) {
+            $year = 2000 + (int) $year;
+        } else {
+            $year = (int) $year;
+        }
+
+        return mktime(0, 0, 0, $month, $day, $year);
+    }
+
+    protected function getNextSundayTimestamp($timestamp)
+    {
+        return strtotime('next Sunday', $timestamp);
+    }
+
+    protected function findConcertByTime($timestamp)
+    {
+        //FIXME
+        $em = $this->getEntityManager();
+        return $em->getRepository('Songbook\Entity\Concert')->findOneBy(
+                array(
+                    'time' => $timestamp
+                ));
+    }
+
+    /**
+     * @param array $data
+     * @return \Songbook\Entity\Concert
+     */
+    protected function createConcert(array $data)
+    {
+        $profile = new Profile();
+        $profile->id = 1;
+
+        $em = $this->getEntityManager();
+        $concert = new Concert();
+        $consert->profile = $profile;
+        $concert->exchangeArray($data);
+        $em->persist($concert);
+        $em->flush();
+        return $concert;
+    }
 }

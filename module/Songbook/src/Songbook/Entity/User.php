@@ -1,7 +1,5 @@
 <?php
-
 namespace Songbook\Entity;
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\InputFilter\InputFilter;
@@ -11,63 +9,36 @@ use Zend\InputFilter\InputFilterInterface;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="song")
+ * @ORM\Table(name="user")
  *
  * @property int $id
- * @property string $title
  *
- **/
-class Song implements InputFilterAwareInterface {
+ */
+class User implements InputFilterAwareInterface
+{
 
     /**
      * @ORM\Id
      * @ORM\Column(type="integer");
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
      * @var int
      */
     protected $id;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    protected $title;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    protected $author;
 
     /**
      * @ORM\Column(type="timestamp")
      */
     protected $create_time;
 
-    /**
-     * @ORM\Column(type="string")
-     */
-    protected $copyright;
 
     /**
-     * @var InputFilter
-     */
-    protected $inputFilter;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Tag")
-     * @ORM\JoinTable(name="tag_song",
-     *      joinColumns={@ORM\JoinColumn(name="song_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
-     *      )
-     **/
-    private $tags;
-
-     /**
      * Magic getter to expose protected properties.
      *
      * @param string $property
      * @return mixed
      */
-    public function __get($property)
+    public function __get ($property)
     {
         return $this->$property;
     }
@@ -126,49 +97,6 @@ class Song implements InputFilterAwareInterface {
                             )
                         )
                     ));
-
-            $inputFilter->add(
-                    array(
-                        'name' => 'title',
-                        'required' => true,
-                        'filters' => array(
-                            array(
-                                'name' => 'StripTags'
-                            ),
-                            array(
-                                'name' => 'StringTrim'
-                            )
-                        ),
-                        'validators' => array(
-                            array(
-                                'name' => 'StringLength',
-                                'options' => array(
-                                    'encoding' => 'UTF-8',
-                                    'min' => 2,
-                                    'max' => 100
-                                )
-                            )
-                        )
-                    ));
-
-            $this->inputFilter = $inputFilter;
         }
-
-        return $this->inputFilter;
-    }
-
-    public function addTag(Tag $tag)
-    {
-        $this->tags[] = $tag;
-    }
-
-    public function importDb()
-    {
-
-    }
-
-    public function importCsv($filename)
-    {
-
     }
 }
