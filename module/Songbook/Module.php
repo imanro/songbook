@@ -31,7 +31,9 @@ class Module implements ConsoleBannerProviderInterface
             'factories' => array(
                 'Songbook\Model\SongImport' => function  ($sm)
                 {
-                    return new SongImport();
+                    $model = new SongImport();
+                    $model->setServiceLocator($sm);
+                    return $model;
                 },
             )
         );

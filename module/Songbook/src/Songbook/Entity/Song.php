@@ -43,6 +43,11 @@ class Song implements InputFilterAwareInterface {
     protected $create_time;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    protected $copyright;
+
+    /**
      * @var InputFilter
      */
     protected $inputFilter;
@@ -96,6 +101,8 @@ class Song implements InputFilterAwareInterface {
     public function exchangeArray ($data = array())
     {
         $this->title = $data['title'];
+        $this->author = $data['author'];
+        $this->copyright = $data['copyright'];
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)
