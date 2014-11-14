@@ -13,6 +13,7 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use Doctrine\DBAL\Types\Type;
 use Ez\Doctrine\DBAL\Types\Timestamp;
+use Ez\Doctrine\DBAL\Types\Enum;
 
 class Module
 {
@@ -23,6 +24,12 @@ class Module
         $moduleRouteListener->attach($eventManager);
 
         \Doctrine\DBAL\Types\Type::addType('timestamp', 'Ez\Doctrine\DBAL\Types\Timestamp');
+        \Doctrine\DBAL\Types\Type::addType('enum', 'Ez\Doctrine\DBAL\Types\Enum');
+
+         $em = $e->getApplication()->getServiceManager()
+            ->get('Doctrine\ORM\EntityManager');
+        $platform = $em->getConnection()->getDatabasePlatform();
+        $platform->registerDoctrineTypeMapping('enum', 'string');
     }
 
     public function getConfig()

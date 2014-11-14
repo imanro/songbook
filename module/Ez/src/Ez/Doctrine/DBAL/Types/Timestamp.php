@@ -6,8 +6,9 @@ use Doctrine\DBAL\Types\Type;
 /**
  * Type that maps an Timestamp MySQL to php objects
  *
- * @author Jordan Samouh
- *
+ * @author manro
+ * Oops, timestamps supported by native datetime if "version" annotation given, see MysqlPlatform::getDateTimeTypeDeclaration.
+ * But, this type adds -> int conversion :)
  */
 class Timestamp extends Type
 {
@@ -25,11 +26,15 @@ class Timestamp extends Type
 
     public function convertToDatabaseValue ($value, AbstractPlatform $platform)
     {
-        return $value;
+        if(is_int($value)){
+            return date('Y-m-d H:i:s', $value );
+        } else {
+            return $value;
+        }
     }
 
     public function convertToPHPValue ($value, AbstractPlatform $platform)
     {
-        return $value;
+        return strtotime($value);
     }
 }

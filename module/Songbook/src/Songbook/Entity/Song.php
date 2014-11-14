@@ -33,9 +33,14 @@ class Song implements InputFilterAwareInterface {
     protected $title;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     protected $author;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $copyright;
 
     /**
      * @ORM\Column(type="timestamp")
@@ -43,17 +48,12 @@ class Song implements InputFilterAwareInterface {
     protected $create_time;
 
     /**
-     * @ORM\Column(type="string")
-     */
-    protected $copyright;
-
-    /**
      * @var InputFilter
      */
     protected $inputFilter;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Tag")
+     * @ORM\ManyToMany(targetEntity="Tag", indexBy="id")
      * @ORM\JoinTable(name="tag_song",
      *      joinColumns={@ORM\JoinColumn(name="song_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
@@ -102,7 +102,6 @@ class Song implements InputFilterAwareInterface {
     {
         $this->title = $data['title'];
         $this->author = $data['author'];
-
         $this->copyright = $data['copyright'];
     }
 
@@ -159,7 +158,7 @@ class Song implements InputFilterAwareInterface {
 
     public function addTag(Tag $tag)
     {
-        $this->tags[] = $tag;
+        $this->tags[$tag->id] = $tag;
     }
 
     public function importDb()

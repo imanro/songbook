@@ -1,7 +1,5 @@
 <?php
-
 namespace Songbook\Model;
-
 use Zend\Db\Sql\Sql;
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
@@ -14,16 +12,20 @@ use Songbook\Entity\Concert;
 use Songbook\Entity\Profile;
 use Songbook\Entity\User;
 
-class SongImport {
+class SongImport
+{
 
     /**
      * @var ServiceLocatorInterface
      */
     protected $sl;
 
+    /**
+     *
+     */
     protected $em;
 
-    public function importDb()
+    public function importDb ()
     {
         $importAdapter = new \Zend\Db\Adapter\Adapter(
                 array(
@@ -33,23 +35,29 @@ class SongImport {
                     'password' => 'songbook_old',
                     'driver_options' => array(
                         PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
-                    ),
-));
+                    )
+                ));
         $sql = new Sql($importAdapter);
         $select = $sql->select()
-        ->from('song')
-        ->order(array('song_title' => 'ASC'));
+            ->from('song')
+            ->order(array(
+            'song_title' => 'ASC'
+        ));
 
         $sqlString = $sql->getSqlStringForSqlObject($select);
 
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
-        $results = $importAdapter->query($sqlString, $importAdapter::QUERY_MODE_EXECUTE, $resultSet );
+        $results = $importAdapter->query($sqlString,
+                $importAdapter::QUERY_MODE_EXECUTE, $resultSet);
 
         $em = $this->getEntityManager();
 
-        foreach($results as $importRow ) {
-            $song = $em->getRepository('Songbook\Entity\Song')->findOneBy(array('title' => $importRow['song_title']));
-            if(is_null($song)){
+        foreach ($results as $importRow) {
+            $song = $em->getRepository('Songbook\Entity\Song')->findOneBy(
+                    array(
+                        'title' => $importRow['song_title']
+                    ));
+            if (is_null($song)) {
                 $data = $this->prepareImportDbArray($importRow);
                 $song = new Song();
                 $song->exchangeArray($data);
@@ -61,19 +69,117 @@ class SongImport {
         return true;
     }
 
-    public function importCsv()
+    public function importTxt ($filename)
     {
-        $string = '5.09.13';
-        $timestamp = $this->getTimestamp($string);
-        $timestampSunday = $this->getNextSundayTimestamp($timestamp);
-        var_dump(date('D, j.m.Y', $timestampSunday));
-        die('import from csv file');
+        // explode by newline
+        if (! file_exists($filename)) {
+            throw new \Exception(
+                    vsprintf('File "%s" is not exists', array(
+                        $filename
+                    )));
+        }
+
+        $lines = file($filename);
+        foreach ($lines as $line) {
+            // foreach
+            $line = trim($line);
+            if (! $line) {
+                continue;
+            }
+
+            $song = $this->findSongByTitle($line);
+            // find by title
+
+            if (! $song) {
+                // not found?
+
+                // create + store
+                $data = array(
+                    'title' => $line,
+                    'author' => '',
+                    'copyright' => ''
+                );
+                $this->createSong($data);
+            }
+        }
+
+        echo "Done.\n";
     }
 
-    public function setServiceLocator (ServiceLocatorInterface $sl)
+    public function importTxtConcert ($filename)
     {
-        $this->sl = $sl;
+        $em = $this->getEntityManager();
+        // explode by newline
+        if (! file_exists($filename)) {
+            throw new \Exception(
+                    vsprintf('File "%s" is not exists', array(
+                        $filename
+                    )));
+        }
+
+        $lines = file($filename);
+
+        $concert = null;
+
+        foreach ($lines as $line) {
+            // foreach
+            $line = trim($line);
+
+            if (! $line) {
+                continue;
+            }
+
+            $parts = explode(';', $line);
+            if (count($parts) == 2 && ! mb_strlen($parts[0])) {
+                $em->flush();
+                // if line seems to be like date
+
+                // get timestamp for this date
+                $timestamp = $this->getTimestamp($parts[1]);
+
+                // get nearest sunday
+                $dateSunday = $this->getNextSundayDate($timestamp);
+
+                // try to find concert...
+                $concert = $this->findConcertByDate($dateSunday);
+
+                // not found? create concert
+                if (! $concert) {
+                    $concert = $this->createConcert(
+                            array(
+                                'time' => $dateSunday
+                            ));
+                }
+
+            } else {
+                $line = preg_replace('/^.+?\)?\./', '', $line);
+                $line = preg_replace('/^.+?\)/', '', $line);
+                $line = trim($line);
+
+                // else
+                $song = $this->findSongByTitle($line);
+                // find by title
+
+                if (! $song) {
+                    // not found?
+
+                    // create + store
+                    $data = array(
+                        'title' => $line,
+                        'author' => '',
+                        'copyright' => ''
+                    );
+                    $song = $this->createSong($data);
+                }
+
+                if (! is_null($concert)) {
+                    // if there is concert - add to concert
+                    $this->addSongToConcert($concert, $song);
+                }
+            }
+        }
     }
+
 
     public function getServiceLocator ()
     {
@@ -94,7 +200,7 @@ class SongImport {
         return $this->em;
     }
 
-    protected function prepareImportDbArray(array $array)
+    protected function prepareImportDbArray (array $array)
     {
         $newArray = array();
 
@@ -113,6 +219,7 @@ class SongImport {
     }
 
     /**
+     *
      * @param string $title
      * @return Ambigous \Songbook\Entity\Song|null
      */
@@ -126,6 +233,7 @@ class SongImport {
     }
 
     /**
+     *
      * @param array $data
      * @return \Songbook\Entity\Song
      */
@@ -140,17 +248,17 @@ class SongImport {
         return $song;
     }
 
-    protected function getTimestamp($string)
+    protected function getTimestamp ($string)
     {
         $array = explode('.', $string);
 
-        if(count($array) != 3) {
+        if (count($array) != 3) {
             throw new \Exception('wrong format');
         }
 
-        @list($day, $month, $year) = $array;
-        $day = (int)$day;
-        $month = (int)$month;
+        @list ($day, $month, $year) = $array;
+        $day = (int) $day;
+        $month = (int) $month;
 
         if (mb_strlen($year) == 2) {
             $year = 2000 + (int) $year;
@@ -161,36 +269,73 @@ class SongImport {
         return mktime(0, 0, 0, $month, $day, $year);
     }
 
-    protected function getNextSundayTimestamp($timestamp)
+    protected function getNextSundayDate ($timestamp)
     {
-        return strtotime('next Sunday', $timestamp);
+        return date('Y-m-d', strtotime('next Sunday', $timestamp));
     }
 
-    protected function findConcertByTime($timestamp)
+    protected function findConcertByDate ($date)
     {
-        //FIXME
+        // FIXME
         $em = $this->getEntityManager();
         return $em->getRepository('Songbook\Entity\Concert')->findOneBy(
                 array(
-                    'time' => $timestamp
+                    'time' => $date
                 ));
     }
 
     /**
+     *
      * @param array $data
      * @return \Songbook\Entity\Concert
      */
-    protected function createConcert(array $data)
+    protected function createConcert (array $data)
     {
-        $profile = new Profile();
-        $profile->id = 1;
-
         $em = $this->getEntityManager();
+        $profile = $em->find('Songbook\Entity\Profile', 1);
+
+        if (is_null($profile)) {
+            $profile = $this->initProfile();
+        }
+
+        $data['profile'] = $profile;
+
         $concert = new Concert();
-        $consert->profile = $profile;
         $concert->exchangeArray($data);
+
         $em->persist($concert);
         $em->flush();
+
+        return $concert;
+    }
+
+    protected function initProfile ()
+    {
+        $em = $this->getEntityManager();
+        $profile = new Profile();
+        $profile->id = 1;
+        $profile->name = 'Revival';
+        $profile->user = $this->initUser();
+        $em->persist($profile);
+        $em->flush();
+        return $profile;
+    }
+
+    protected function initUser ()
+    {
+        $em = $this->getEntityManager();
+        $user = new User();
+        $user->id = 1;
+        $em->persist($user);
+        $em->flush();
+        return $user;
+    }
+
+    protected function addSongToConcert (Concert $concert, Song $song)
+    {
+        $em = $this->getEntityManager();
+        $concert->addSong($song);
+        $em->persist($concert);
         return $concert;
     }
 }

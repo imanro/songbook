@@ -11,21 +11,36 @@ class SongConsoleController extends AbstractActionController {
      */
     protected $songImport;
 
+    /**
+     * @var \Sonbook\Model\SongService
+     */
+    protected $songService;
+
+
     public function importAction()
     {
         $request = $this->getRequest();
-        $isCsv = $request->getParam('csv');
+        $isTxt = $request->getParam('txt');
+        $isTxtConcert = $request->getParam('txt-concerts');
         $isDb = $request->getParam('db');
+        $filename = $request->getParam('filename');
 
         $songImport = $this->getSongImport();
-
-        if ($isCsv) {
-            $retval = $songImport->importCsv();
+        if ($isTxt) {
+            $retval = $songImport->importTxt($filename);
+        } elseif ($isTxtConcert) {
+            $retval = $songImport->importTxtConcert($filename);
         } elseif ($isDb) {
             $retval = $songImport->importDb();
         } else {
             throw new \Exception('required arguments is csv|db');
         }
+    }
+
+    public function createHeadersAction()
+    {
+        $songService = $this->getSongService();
+        $songService->createHeaders();
     }
 
     /**
@@ -38,5 +53,17 @@ class SongConsoleController extends AbstractActionController {
             $this->songImport = $sm->get('Songbook\Model\SongImport');
         }
         return $this->songImport;
+    }
+
+    /**
+     * @return \Sonbook\Model\SongService
+     */
+    protected function getSongService()
+    {
+        if (! $this->songService) {
+            $sm = $this->getServiceLocator();
+            $this->songService = $sm->get('Songbook\Model\SongService');
+        }
+        return $this->songService;
     }
 }

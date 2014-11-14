@@ -39,7 +39,7 @@ class Concert implements InputFilterAwareInterface
     protected $profile;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Song")
+     * @ORM\ManyToMany(targetEntity="Song", inversedBy="song", indexBy="id")
      * @ORM\JoinTable(name="concert_song",
      *      joinColumns={@ORM\JoinColumn(name="concert_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="song_id", referencedColumnName="id")}
@@ -86,10 +86,13 @@ class Concert implements InputFilterAwareInterface
      */
     public function exchangeArray ($data = array())
     {
-        $this->title = $data['title'];
-        $this->author = $data['author'];
+        $this->time = $data['time'];
+        $this->profile = $data['profile'];
+    }
 
-        $this->copyright = $data['copyright'];
+    public function addSong(Song $song)
+    {
+        $this->songs[$song->id] = $song;
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)

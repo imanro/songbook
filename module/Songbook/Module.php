@@ -4,7 +4,9 @@ namespace Songbook;
 
 use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
+
 use Songbook\Model\SongImport;
+use Songbook\Model\SongService;
 
 
 class Module implements ConsoleBannerProviderInterface
@@ -35,6 +37,13 @@ class Module implements ConsoleBannerProviderInterface
                     $model->setServiceLocator($sm);
                     return $model;
                 },
+               'Songbook\Model\SongService' => function  ($sm)
+                {
+                    $model = new SongService();
+                    $model->setServiceLocator($sm);
+                    return $model;
+                },
+
             )
         );
     }
@@ -48,8 +57,10 @@ class Module implements ConsoleBannerProviderInterface
 
     public function getConsoleUsage(Console $console){
      return array(
-        'import-songs [db|csv]'        => 'Import songs from database or csv file',
-         array('[db|csv]',    'Import from Database OR Csv file'),
+        'import-songs [db|txt|txt-concerts] <filename>'        => 'Import songs from database or csv file',
+         array('[db|txt|txt-concerts]',    'Import from Database OR text file with songs or songs + concert data'),
+         array('<filename>', 'Text file name with data to be imported'),
+        'create-headers'        => 'Create headers for all songs',
      );
 }
 }

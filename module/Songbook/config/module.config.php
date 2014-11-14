@@ -51,9 +51,19 @@ $conf = array(
     'console' => array(
         'router' => array(
             'routes' => array(
+              'create-headers' => array(
+                    'options' => array(
+                        'route' => 'create-headers',
+                        'defaults' => array(
+                            'controller' => 'SongConsole',
+                            'action' => 'create-headers'
+                        )
+                    )
+                ),
+
                 'import-songs' => array(
                     'options' => array(
-                        'route' => 'import-songs (db|csv)',
+                        'route' => 'import-songs (db|txt|txt-concerts) [<filename>]',
                         'defaults' => array(
                             'controller' => 'SongConsole',
                             'action' => 'import'

@@ -20,7 +20,8 @@ return array(
                     'port' => '3306',
                     'user' => 'songbook',
                     'password' => 'songbook',
-                    'dbname' => 'songbook'
+                    'dbname' => 'songbook',
+                    'charset'  => 'utf8',
                 ),
             )
         )

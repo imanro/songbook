@@ -9,13 +9,28 @@ use Zend\InputFilter\InputFilterInterface;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="profile")
+ * @ORM\Table(name="content")
  *
  * @property int $id
  *
  */
-class Profile implements InputFilterAwareInterface
+class Content implements InputFilterAwareInterface
 {
+
+    /**
+     * Header
+     */
+    const TYPE_HEADER = 'header';
+
+    /**
+     * Inline content
+     */
+    const TYPE_INLINE = 'inline';
+
+    /**
+     * Link
+     */
+    const TYPE_LINK = 'link';
 
     /**
      * @ORM\Id
@@ -27,20 +42,39 @@ class Profile implements InputFilterAwareInterface
     protected $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="timestamp")
      */
-    protected $name;
+    protected $create_time;
+
+    /**
+     * @ORM\Column(type="enum", options={\Ez\Doctrine\DBAL\Types\Enum::RANGE:"header,inline,link"})
+     */
+    protected $type;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $url;
+
+    /**
+     * @ORM\Column(type="string", length=65535, nullable=true)
+     */
+    protected $content;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $is_main;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Song")
+     */
+    protected $song;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      */
     protected $user;
-
-    /**
-     * @ORM\Column(type="timestamp")
-     */
-    protected $create_time;
-
 
     /**
      * Magic getter to expose protected properties.
@@ -81,8 +115,9 @@ class Profile implements InputFilterAwareInterface
      */
     public function exchangeArray ($data = array())
     {
-        $this->name = $data['name'];
-        $this->user = $data['user'];
+        $this->type = $data['type'];
+        $this->url = $data['url'];
+        $this->content = $data['content'];
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)

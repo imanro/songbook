@@ -71,10 +71,6 @@ class User implements InputFilterAwareInterface
      */
     public function exchangeArray ($data = array())
     {
-        $this->title = $data['title'];
-        $this->author = $data['author'];
-
-        $this->copyright = $data['copyright'];
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)
