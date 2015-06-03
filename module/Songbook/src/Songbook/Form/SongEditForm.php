@@ -9,6 +9,7 @@ class SongEditForm extends Form
 {
     public function __construct($name = null)
     {
+        $this->wrapElements(TRUE);
         // we want to ignore the name passed
         parent::__construct('song_edit');
 
