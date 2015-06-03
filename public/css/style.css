@@ -3,6 +3,10 @@ body {
     padding-bottom: 40px;
 }
 
+.clear {
+	clear: both;
+}
+
 .zf-green {
     color: #68b604;
 }
@@ -18,6 +22,11 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#70d900', endColorstr='#57a900', GradientType=0);
 }
 
+/* tb overwriting */
+label {
+	font-weight: normal;
+}
+
 .btn-success:hover,
 .btn-success:active,
 .btn-success.active,
@@ -30,8 +39,90 @@ body {
   background-color: #57a900;
 }
 
+nav {
+	display: none;
+}
+
+ul.list {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#similar-cont {
+	height: 500px;
+	position: fixed;
+	overflow: hidden;
+}
+
+#similar-cont ul {
+	
+	height: 480px;
+	overflow: scroll;
+}
+
+table.wrapper {
+	border-collapse: collapse;
+}
+
+table.wrapper td {
+	vertical-align: top;
+}
+
 div.container a.brand {
     background: url("../img/zf2-logo.png") no-repeat scroll 0 10px transparent;
     margin-left: 0;
     padding: 8px 20px 12px 40px;
+}
+
+#merge-block .master {
+	font-weight: bold;
+}
+
+#merge-block .found {
+	color: #060;
+}
+
+/* concert composite */
+
+/* sortable conf */
+#concert-items li {
+	width: 400px;
+	margin: 0 0 5px 0;
+	border: solid 1px #ccc;
+	background: #eee;
+	padding: 0 4px;
+	cursor: grab;
+}
+
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+#concert-items li.placeholder {
+  position: relative;
+  /** More li styles **/
+}
+#concert-items li.placeholder:before {
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  /** Define arrowhead **/
+  color: red;
+  content: '▶';
+  font-size: 10px;
+}
+
+.song-metadata .amount {
+	color: #999;
+}
+
+.song-metadata .date {
+	color: #c00;
 }

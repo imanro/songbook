@@ -1,0 +1,6 @@
+<ul>
+<?php foreach($data as $concert): ?>
+<?php /* @var $concert \Songbook\Entity\Concert */ ?>
+<li><a href="<?= $this->url('default', array('controller' => 'concert', 'action' => 'browse', 'id' => $concert->id )) ?>"><?= date('j.m.Y', $concert->time ); ?></a></li>
+<?php endforeach;?>
+</ul>

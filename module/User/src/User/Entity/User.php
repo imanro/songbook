@@ -1,5 +1,5 @@
 <?php
-namespace Songbook\Entity;
+namespace User\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Zend\InputFilter\InputFilter;
@@ -12,7 +12,6 @@ use Zend\InputFilter\InputFilterInterface;
  * @ORM\Table(name="user")
  *
  * @property int $id
- *
  */
 class User implements InputFilterAwareInterface
 {
@@ -30,7 +29,6 @@ class User implements InputFilterAwareInterface
      * @ORM\Column(type="timestamp")
      */
     protected $create_time;
-
 
     /**
      * Magic getter to expose protected properties.

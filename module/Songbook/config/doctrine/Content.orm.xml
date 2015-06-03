@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+	xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+	<entity name="Songbook\Entity\Content" table="content">
+		<id name="id" type="integer">
+			<generator strategy="AUTO" />
+		</id>
+		<field name="type" type="enum">
+			<options>
+				<option name="\Ez\Doctrine\DBAL\Types\Enum::RANGE">header,inline,link</option>
+			</options>
+		</field>
+		<field name="create_time" type="timestamp" />
+		<field name="url" />
+		<field name="content" />
+		<field name="is_favorite" />
+		<many-to-one field="song" target-entity="Song" />
+		<many-to-one field="user" target-entity="User\Entity\User" />
+	</entity>
+</doctrine-mapping>

@@ -32,7 +32,12 @@ class Profile implements InputFilterAwareInterface
     protected $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @var array
+     */
+    protected $concerts;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\User\Entity\User")
      */
     protected $user;
 

@@ -4,10 +4,8 @@ namespace Songbook;
 
 use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
 use Zend\Console\Adapter\AdapterInterface as Console;
-
 use Songbook\Model\SongImport;
-use Songbook\Model\SongService;
-
+use Zend\Mvc\MvcEvent;
 
 class Module implements ConsoleBannerProviderInterface
 {
@@ -16,7 +14,8 @@ class Module implements ConsoleBannerProviderInterface
         return array(
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                    'User' => __DIR__ . '/../User/src/User',
                 )
             )
         );
@@ -37,11 +36,40 @@ class Module implements ConsoleBannerProviderInterface
                     $model->setServiceLocator($sm);
                     return $model;
                 },
-               'Songbook\Model\SongService' => function  ($sm)
+
+                'User\Entity\User' => function  ($sm)
                 {
-                    $model = new SongService();
-                    $model->setServiceLocator($sm);
-                    return $model;
+                    $entity = new \User\Entity\User();
+                    return $entity;
+                },
+
+                // Services
+               'Songbook\Service\Song' => function  ($sm)
+                {
+                    $service = new \Songbook\Service\Song();
+                    $service->setServiceLocator($sm);
+                    return $service;
+                },
+
+               'Songbook\Service\Concert' => function  ($sm)
+                {
+                    $service = new \Songbook\Service\Concert();
+                    $service->setServiceLocator($sm);
+                    return $service;
+                },
+
+               'Songbook\Service\Profile' => function  ($sm)
+                {
+                    $service = new \Songbook\Service\Profile();
+                    $service->setServiceLocator($sm);
+                    return $service;
+                },
+
+                'User\Service\User' => function  ($sm)
+                {
+                    $service = new \User\Service\User();
+                    $service->setServiceLocator($sm);
+                    return $service;
                 },
 
             )
@@ -57,8 +85,8 @@ class Module implements ConsoleBannerProviderInterface
 
     public function getConsoleUsage(Console $console){
      return array(
-        'import-songs [db|txt|txt-concerts] <filename>'        => 'Import songs from database or csv file',
-         array('[db|txt|txt-concerts]',    'Import from Database OR text file with songs or songs + concert data'),
+        'import-songs [db|txt|txt-concerts|folder-slides|folder-texts] <filename>'        => 'Import songs from database or csv file',
+         array('[db|txt|txt-concerts|folder-slides|folder-texts]',    'Import from Database OR text file with songs or songs + concert data'),
          array('<filename>', 'Text file name with data to be imported'),
         'create-headers'        => 'Create headers for all songs',
      );

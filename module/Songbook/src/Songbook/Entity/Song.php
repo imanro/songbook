@@ -10,7 +10,8 @@ use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Songbook\Entity\SongRepository")
+
  * @ORM\Table(name="song")
  *
  * @property int $id
@@ -29,6 +30,7 @@ class Song implements InputFilterAwareInterface {
 
     /**
      * @ORM\Column(type="string")
+     * @deprecated
      */
     protected $title;
 
@@ -46,6 +48,31 @@ class Song implements InputFilterAwareInterface {
      * @ORM\Column(type="timestamp")
      */
     protected $create_time;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Content", mappedBy="song", cascade="ALL" fetch="EXTRA_LAZY")
+     */
+    protected $favoriteHeader;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Content", mappedBy="song", cascade="ALL")
+     */
+    protected $defaultHeader;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Content", mappedBy="song", cascade="ALL")
+     */
+    protected $content;
+
+     /**
+     * @ORM\OneToMany(targetEntity="ConcertItem", mappedBy="song", cascade="ALL")
+     */
+    protected $concertItem;
+
+    /**
+     * @ORM\OneToOne(targetEntity="ConcertItem", mappedBy="song", cascade="ALL")
+     */
+    protected $currentConcertItem;
 
     /**
      * @var InputFilter

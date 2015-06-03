@@ -1,0 +1,6 @@
+<ol>
+<?php foreach($data as $song):?>
+<?php /* @var $song \Songbook\Entity\Song */ ?>
+<li><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?></li>
+<?php endforeach; ?>
+</ol>

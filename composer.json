@@ -10,6 +10,7 @@
         "doctrine/orm": "*",
 	"doctrine/doctrine-module": "*",
 	"doctrine/doctrine-orm-module": "*",
+	"beberlei/DoctrineExtensions": "dev-master",
 
 	"zendframework/zend-cache": "2.3.*",
 	"zendframework/zend-config": "2.3.*",

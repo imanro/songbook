@@ -8,8 +8,10 @@ use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Songbook\Entity\ConcertRepository")
  * @ORM\Table(name="concert")
+ *
+ * @property $id
  */
 class Concert implements InputFilterAwareInterface
 {
@@ -29,7 +31,7 @@ class Concert implements InputFilterAwareInterface
     protected $create_time;
 
     /**
-     * @ORM\Column(type="timestamp")
+     * @ORM\Column(name="`time`", type="timestamp")
      */
     protected $time;
 
@@ -39,13 +41,20 @@ class Concert implements InputFilterAwareInterface
     protected $profile;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Song", inversedBy="song", indexBy="id")
-     * @ORM\JoinTable(name="concert_song",
-     *      joinColumns={@ORM\JoinColumn(name="concert_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="song_id", referencedColumnName="id")}
-     *      )
-     **/
-    private $songs;
+     * @ORM\OneToMany(targetEntity="ConcertItem", mappedBy="concert")
+     * @ORM\OrderBy({"order" = "ASC", "id" = "ASC"})
+     */
+    protected $items;
+
+    /**
+     * @var \Songbook\Service\Concert
+     */
+    protected $concertService;
+
+    /**
+     * @var \Songbook\Service\Song
+     */
+    protected $songService;
 
     /**
      * Magic getter to expose protected properties.
@@ -88,16 +97,13 @@ class Concert implements InputFilterAwareInterface
     {
         $this->time = $data['time'];
         $this->profile = $data['profile'];
-    }
 
-    public function addSong(Song $song)
-    {
-        $this->songs[$song->id] = $song;
+        return $this;
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)
     {
-        throw new \Exception("Not used");
+        throw new \Exception('Not used');
     }
 
     public function getInputFilter ()
@@ -117,4 +123,31 @@ class Concert implements InputFilterAwareInterface
                     ));
         }
     }
+
+    /**
+     * @return \Sonbook\Model\ConcertService
+     */
+    protected function getConcertService ()
+    {
+        if (! $this->concertService) {
+            $sm = $this->getServiceLocator();
+            $this->concertService = $sm->get('Songbook\Service\Concert');
+        }
+
+        return $this->concertService;
+    }
+
+    /**
+     * @return \Sonbook\Model\SongService
+     */
+    protected function getSongService ()
+    {
+        if (! $this->songService) {
+            $sm = $this->getServiceLocator();
+            $this->songService = $sm->get('Songbook\Service\Song');
+        }
+
+        return $this->songService;
+    }
+
 }

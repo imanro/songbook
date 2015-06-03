@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+	xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+	<entity name="Songbook\Entity\Concert" table="concert">
+		<id name="id" type="integer">
+			<generator strategy="AUTO" />
+		</id>
+		<field name="create_time" type="timestamp" />
+		<field name="time" column="`time`" type="timestamp" />
+		<many-to-one field="profile" target-entity="Profile" />
+		<one-to-many field="items" target-entity="ConcertItem" mappedBy="concert" />
+	</entity>
+</doctrine-mapping>

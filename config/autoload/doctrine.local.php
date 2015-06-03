@@ -24,7 +24,7 @@ return array(
                     'charset'  => 'utf8',
                 ),
             )
-        )
+        ),
     )
 );
 

@@ -6,6 +6,7 @@ use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
+use User\Entity\User;
 
 /**
  * @ORM\Entity
@@ -64,7 +65,7 @@ class Content implements InputFilterAwareInterface
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $is_main;
+    protected $is_favorite;
 
     /**
      * @ORM\ManyToOne(targetEntity="Song")
@@ -72,7 +73,7 @@ class Content implements InputFilterAwareInterface
     protected $song;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="\User\Entity\User")
      */
     protected $user;
 

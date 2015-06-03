@@ -1,0 +1,95 @@
+<?php
+/*
+ @var $concert \Songbook\Entity\Concert
+ */
+?>
+
+<div id="concert-composite-block">
+
+
+<div class="wrapper">
+<?php
+$element = new \Zend\Form\Element\Text('concert-id');
+$element->setAttribute('type', 'hidden');
+$element->setAttribute('value', $concert->id);
+$element->setAttribute('id', 'concert-id');
+?>
+
+<?= $this->formInput($element); ?>
+
+<div class="col-md-8">
+<div id="search-block">
+
+<?php
+$element = new \Zend\Form\Element\Text('search-song');
+$element->setAttribute('type', 'text');
+$element->setAttribute('class', 'search');
+$element->setAttribute('id', 'search-song');
+$element->setLabel("Поиск:");
+
+?>
+
+<?= $this->formLabel($element); ?>
+<?= $this->formInput($element); ?>
+
+
+</div>
+
+<div id="master-song-block">
+
+<?php
+$element = new \Zend\Form\Element\Text('master-song-id');
+$element->setAttribute('type', 'hidden');
+$element->setAttribute('id', 'master-song-id');
+?>
+
+<?= $this->formInput($element); ?>
+
+<div class="cont">
+<div class="favorite-header-cont"></div>
+<div class="info-cont"></div>
+<div class="headers-cont"></div>
+</div>
+
+<button id="master-song-add-to-concert" class="btn btn-primary" name="button" type="button" style="display: none;">Добавить</button>
+
+<hr/>
+</div>
+<div id="concert-block">
+
+<?php
+$element = new \Zend\Form\Element\Button('button');
+$element->setAttribute('type', 'submit');
+$element->setAttribute('class', 'btn btn-primary');
+$element->setAttribute('id', 'concert-create');
+$element->setLabel("Новый");
+?>
+
+<?= $this->formButton($element); ?>
+
+<h3>Репертуар на <?= date('j.m.Y', $concert->time); ?></h3>
+
+<ol id="concert-items">
+<?php foreach($songService->getCollectionByConcert($concert) as $song): ?>
+
+<?php /* @var $song \Songbook\Entity\Song */ ?>
+<li class="concert-item" data-id="<?= $song->currentConcertItem->id ?>"><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?> <a href="#" class="concert-item-delete" data-id=<?= $song->currentConcertItem->id ?>>[Уд.]</a></li>
+<?php endforeach; ?>
+</ol>
+
+
+</div>
+</div>
+<div class="col-md-4">
+<div id="long-not-used-cont">
+<h4 class="header" style="display:none">Давно не исполнялись</h4>
+</div>
+
+<div id="top-popular-cont">
+<h4 class="header" style="display:none">Топ популярных</h4>
+</div>
+
+</div>
+<div class="clear"></div>
+</div>
+</div>

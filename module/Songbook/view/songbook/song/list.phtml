@@ -1,6 +1,9 @@
-<ul>
+<ol class="list">
 <?php foreach( $songs as $song ): ?>
 <?php /* @var $song \Songbook\Entity\Song */ ?>
-<li><?= $song->title; ?></li>
+<li><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?>
+<a href="<?= $this->url('default', array('controller' => 'song', 'action' => 'delete', 'id' => $song->id )) ?>">[Уд.]</a>
+<a href="<?= $this->url('default', array('controller' => 'song', 'action' => 'edit', 'id' => $song->id )) ?>">[Ред.]</a>
+</li>
 <?php endforeach; ?>
-</ul>
+</ol>

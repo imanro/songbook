@@ -6,11 +6,11 @@ use Zend\Http\Response as ZendHttpResponse;
 
 class Response extends ZendHttpResponse {
 
-    public function prepareData(array $data)
+    public function prepareData(array $data, $status = 'ok')
     {
         return $this->prepare(
                 array(
-                    'status' => 'ok',
+                    'status' => $status,
                     'data' => $data,
         ));
     }

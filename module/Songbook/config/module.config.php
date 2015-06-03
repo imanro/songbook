@@ -9,6 +9,9 @@ $conf = array(
             'TagAjax' => 'Songbook\Controller\TagAjaxController',
             'List' => 'Songbook\Controller\ListController',
             'ListAjax' => 'Songbook\Controller\ListAjaxController',
+            'Sandbox' => 'Songbook\Controller\SandboxController',
+            'Concert' => 'Songbook\Controller\ConcertController',
+            'ConcertAjax' => 'Songbook\Controller\ConcertAjaxController',
         )
     ),
 
@@ -19,7 +22,7 @@ $conf = array(
            'default' => array(
                 'type' => 'segment',
                 'options' => array(
-                    'route' => '/:controller[/][:action][/:id]',
+                    'route' => '/:controller[/][:action][/][:id]',
                     'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ),
@@ -63,7 +66,7 @@ $conf = array(
 
                 'import-songs' => array(
                     'options' => array(
-                        'route' => 'import-songs (db|txt|txt-concerts) [<filename>]',
+                        'route' => 'import-songs (db|txt|txt-concerts|folder-slides|folder-texts) [<filename>]',
                         'defaults' => array(
                             'controller' => 'SongConsole',
                             'action' => 'import'
@@ -86,18 +89,55 @@ $conf = array(
         ),
     ),
 
+    //'doctrine_factories' => array('entitymanager' => 'Ez\Doctrine\Service\EntityManagerExtendedFactory'),
+
     'doctrine' => array(
+        //'entitymanager' => array( 'orm_default' => array('connection' => 'orm_d') ),
         'driver' => array(
+            /*
             'song_entity' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'paths' => array(
-                    __DIR__ . '/../src/Songbook/Entity'
+                    __DIR__ . '/../src/Songbook/Entity',
+                )
+            ),
+            'user_entity' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'paths' => array(
+                    __DIR__ . '/../../User/src/User/Entity'
                 )
             ),
 
             'orm_default' => array(
                 'drivers' => array(
-                    'Songbook\Entity' => 'song_entity'
+                    'Songbook\Entity' => 'song_entity',
+                    'User\Entity' => 'user_entity'
+                )
+            )
+            */
+            'song_entity' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver',
+                'paths' => array( __DIR__ . '/doctrine' => 'Songbook\Entity' ),
+                //'extension' => '.dcm.xml'
+            ),
+            'user_entity' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver',
+                'paths' => array( __DIR__ . '/../../User/config/doctrine' => 'User\Entity' ),
+                //'extension' => '.dcm.xml'
+
+            ),
+
+            'orm_default' => array(
+                'drivers' => array(
+                    'Songbook\Entity' => 'song_entity',
+                    'User\Entity' => 'user_entity'
+                )
+            )
+        ),
+        'configuration' => array(
+            'orm_default' => array(
+                'numeric_functions' => array(
+                    'RAND' => 'DoctrineExtensions\Query\MySql\Rand'
                 )
             )
         )

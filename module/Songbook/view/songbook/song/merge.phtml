@@ -1,0 +1,85 @@
+<?php
+use \Zend\Form\Element;
+/* @var $master \Songbook\Entity\Song */
+?>
+
+<div id="merge-block">
+<h2>Merging songs</h2>
+<table class="wrapper merge-table">
+<tr><td>
+<ul class="list">
+<?php foreach( $songs as $song ): ?>
+<?php /* @var $song \Songbook\Entity\Song */ ?>
+<li class="<?= (( $master && $master->id == $song->id )? 'master' : '' ) ?>"><a name="song-master-<?= $song->id ?>"></a><a href="<?= $this->url('default', array('controller' => 'song', 'action' => 'merge', 'id' => $song->id )) . '#song-master-' . $song->id; ?>"><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?></a></li>
+<?php endforeach; ?>
+</ul>
+</td>
+<td>
+<?php
+$id = (( $master )? $master->id : null );
+$form = new \Zend\Form\Form();
+$form->setAttribute('action', $this->url('default', array('controller' => 'song', 'action' => 'merge', 'id' => $id )));
+$form->setAttribute('method', 'post');
+ $form->prepare();
+ ?>
+<?= $this->form()->openTag($form); ?>
+
+<div id="similar-cont">
+<?php
+$element = new \Zend\Form\Element\Button('submit');
+$element->setAttribute('type', 'submit');
+$element->setLabel("<<");
+$element->setAttribute('class', 'btn btn-primary');
+?>
+<?= $this->formButton($element); ?>
+
+<ul class="list">
+
+
+<?php foreach( $similar as $row ): ?>
+<?php
+if( is_array($row)) {
+$song = $row[0];
+/* @var $song \Songbook\Entity\Song */
+$score = $row['score'];
+} else {
+    $song = $row;
+    $score = 0;
+}
+
+?>
+
+<?php
+$checkbox = new Element\Checkbox('merge[' . $song->id . ']');
+
+$checkbox->setUseHiddenElement(true);
+$checkbox->setCheckedValue(1);
+$checkbox->setValue(0);
+$checkbox->setUncheckedValue(0);
+
+//$checkbox->setAttribute('value', $song->id );
+$checkbox->setAttribute('id', 'merge-' . $song->id );
+
+$title = (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content );
+
+if( !$title ){
+    echo '<li class="error">title not found: ' . $song->id . '</li>';
+    continue;
+}
+
+$label = new Element\Text('text');
+$label->setLabel($title);
+$label->setAttribute('id', 'merge-' . $song->id );
+?>
+
+<li class="<?= (( $score > 0 )? 'found' : '' ) ?>">
+<?= $this->formCheckbox($checkbox); ?> <?= $this->formLabel($label); ?> <a href="#song-master-<?= $song->id ?>">[link]</a>
+</li>
+<?php endforeach; ?>
+</ul>
+</div>
+<?= $this->form()->closeTag(); ?>
+</td>
+</tr>
+</table>
+</div>
