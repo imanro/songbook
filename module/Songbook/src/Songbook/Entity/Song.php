@@ -33,13 +33,28 @@ class Song implements InputFilterAwareInterface {
     protected $title;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $author;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $copyright;
+
+    /**
+     * @ORM\Column(type="timestamp")
+     */
+    protected $create_time;
+
+    /**
      * @var InputFilter
      */
     protected $inputFilter;
 
-     /**
-     * @ORM\ManyToMany(targetEntity="Tag")
-     * @ORM\JoinTable(name="tags_songs",
+    /**
+     * @ORM\ManyToMany(targetEntity="Tag", indexBy="id")
+     * @ORM\JoinTable(name="tag_song",
      *      joinColumns={@ORM\JoinColumn(name="song_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
      *      )
@@ -85,9 +100,9 @@ class Song implements InputFilterAwareInterface {
      */
     public function exchangeArray ($data = array())
     {
-        $this->id = $data['id'];
-        $this->artist = $data['artist'];
         $this->title = $data['title'];
+        $this->author = $data['author'];
+        $this->copyright = $data['copyright'];
     }
 
     public function setInputFilter (InputFilterInterface $inputFilter)
@@ -103,7 +118,7 @@ class Song implements InputFilterAwareInterface {
             $inputFilter->add(
                     array(
                         'name' => 'id',
-                        'required' => true,
+                        'required' => false,
                         'filters' => array(
                             array(
                                 'name' => 'Int'
@@ -128,7 +143,7 @@ class Song implements InputFilterAwareInterface {
                                 'name' => 'StringLength',
                                 'options' => array(
                                     'encoding' => 'UTF-8',
-                                    'min' => 1,
+                                    'min' => 2,
                                     'max' => 100
                                 )
                             )
@@ -143,6 +158,16 @@ class Song implements InputFilterAwareInterface {
 
     public function addTag(Tag $tag)
     {
-        $this->tags[] = $tag;
+        $this->tags[$tag->id] = $tag;
+    }
+
+    public function importDb()
+    {
+
+    }
+
+    public function importCsv($filename)
+    {
+
     }
 }

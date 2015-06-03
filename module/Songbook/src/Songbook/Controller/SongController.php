@@ -1,10 +1,14 @@
 <?php
 namespace Songbook\Controller;
-use Songbook\Form\SongEditForm;       // <-- Add this import
+use Songbook\Form\SongEditForm;
+use Songbook\Entity\Song;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Doctrine\ORM\EntityManager;
 
+/**
+ * @author manro
+ */
 class SongController extends AbstractActionController
 {
 
@@ -13,6 +17,9 @@ class SongController extends AbstractActionController
      */
     protected $em;
 
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
     public function getEntityManager ()
     {
         if (null === $this->em) {
@@ -43,9 +50,32 @@ class SongController extends AbstractActionController
 
     public function editAction ()
     {
+        $em = $this->getEntityManager();
         $id = $this->params('id', null);
-        $form = new SongEditForm();
 
+        if (! is_null($id)) {
+            $song = $em->find('Songbook\Entity\Song', $id);
+        } else {
+            $song = new Song();
+        }
+
+        $form = new SongEditForm();
+        $request = $this->getRequest();
+
+        if( $request->isPost()){
+
+            $data = $request->getPost();
+            $form->setData($data[$form->getName()]);
+
+            if($form->isValid())
+            {
+                $song->exchangeArray($form->getData());
+                $em->persist($song);
+                $em->flush();
+            }
+
+
+        }
         return array(
           'form' => $form
         );
@@ -59,9 +89,20 @@ class SongController extends AbstractActionController
             return $this->redirect()->toRoute('songbook');
         }
 
+        $song = $this->getEntityManager()->find('Songbook\Entity\Song', $id);
+
         return array(
-            'form' => $this->getEntityManager()->find('Songbook\Entity\Song',
-                    $id)
+            'song' => $song
+        );
+    }
+
+    public function listAction ()
+    {
+        // take all songs
+        $songs = $this->getEntityManager()->getRepository('Songbook\Entity\Song')->findAll();
+
+        return array(
+          'songs' => $songs
         );
     }
 

@@ -4,6 +4,7 @@ $conf = array(
         'invokables' => array(
             'Song' => 'Songbook\Controller\SongController',
             'SongAjax' => 'Songbook\Controller\SongAjaxController',
+            'SongConsole' => 'Songbook\Controller\SongConsoleController',
             'Tag' => 'Songbook\Controller\TagController',
             'TagAjax' => 'Songbook\Controller\TagAjaxController',
             'List' => 'Songbook\Controller\ListController',
@@ -47,7 +48,36 @@ $conf = array(
         )
     ),
 
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+              'create-headers' => array(
+                    'options' => array(
+                        'route' => 'create-headers',
+                        'defaults' => array(
+                            'controller' => 'SongConsole',
+                            'action' => 'create-headers'
+                        )
+                    )
+                ),
+
+                'import-songs' => array(
+                    'options' => array(
+                        'route' => 'import-songs (db|txt|txt-concerts) [<filename>]',
+                        'defaults' => array(
+                            'controller' => 'SongConsole',
+                            'action' => 'import'
+                        )
+                    )
+                )
+             )
+        )
+    ),
+
     'view_manager' => array(
+        'display_not_found_reason' => true,
+        'display_exceptions' => true,
+
         'template_path_stack' => array(
             'songbook' => __DIR__ . '/../view'
         ),
