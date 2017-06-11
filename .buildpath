@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
-<<<<<<< HEAD
 	<buildpathentry kind="src" path=""/>
-=======
-	<buildpathentry kind="src" path="public"/>
->>>>>>> refs/remotes/origin/master
-	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
-	<buildpathentry kind="src" path="config"/>
-	<buildpathentry kind="src" path="vendor"/>
-	<buildpathentry kind="src" path="module"/>
 </buildpath>

@@ -77,6 +77,9 @@ class Content implements InputFilterAwareInterface
      */
     protected $user;
 
+    //protected $songDefaultHeader;
+    //protected $songFavoriteHeader;
+
     /**
      * Magic getter to expose protected properties.
      *

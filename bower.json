@@ -1,0 +1,25 @@
+{
+  "name": "songbook",
+  "authors": [
+    "manro <roman.denisov@gmail.com>"
+  ],
+  "description": "Song management system for worship leaders",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/assets/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery-ui": "^1.12.1",
+    "jquery-impromptu": "^6.2.3",
+    "jquery-sortable": "^0.9.13"
+  }
+}

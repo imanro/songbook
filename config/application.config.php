@@ -5,7 +5,7 @@ mb_internal_encoding('utf-8');
 return array(
     // This should be an array of module namespaces used in the application.
     'modules' => array(
-        'ZendDeveloperTools',
+        /* 'ZendDeveloperTools', */
         'DoctrineModule',
         'DoctrineORMModule',
         'Application',

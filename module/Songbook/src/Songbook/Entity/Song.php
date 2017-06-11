@@ -59,15 +59,12 @@ class Song implements InputFilterAwareInterface {
      */
     protected $defaultHeader;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Content", mappedBy="song", cascade="ALL")
-     */
     protected $content;
 
-     /**
-     * @ORM\OneToMany(targetEntity="ConcertItem", mappedBy="song", cascade="ALL")
-     */
-    protected $concertItem;
+
+protected $concertItem;
+
+    protected $concertItems;
 
     /**
      * @ORM\OneToOne(targetEntity="ConcertItem", mappedBy="song", cascade="ALL")

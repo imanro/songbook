@@ -22,6 +22,9 @@ return array(
                     'password' => 'songbook',
                     'dbname' => 'songbook',
                     'charset'  => 'utf8',
+                    'driverOptions' => array(
+                        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SQL_MODE=\'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\''
+                    )
                 ),
             )
         ),

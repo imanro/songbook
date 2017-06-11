@@ -85,12 +85,9 @@ class SongAjaxController extends Controller
     public function getSuggestionLongNotUsedAction()
     {
         $songService = $this->getSongService();
+        /* @var $songService \Songbook\Service\Song */
 
-        try {
-            $songs = $songService->getCollectionLongNotUsed();
-        } catch(\Exception $e){
-            throw new \Ez\Api\Exception($e);
-        }
+        $songs = $songService->getCollectionLongNotUsed();
 
         $array = array();
 
@@ -101,6 +98,35 @@ class SongAjaxController extends Controller
         $response = $this->getResponse();
         return $response->prepareData($array);
     }
+
+    public function getSuggestionUsedLastMonthsAction()
+    {
+        $request = $this->getRequest();
+        /* @var $request \Ez\Api\Request */
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(array(
+            'limit' => true,
+            'monthsAmount' => true
+        ));
+
+        $limit = (int)$request->getParam('limit');
+        $monthsAmount = (int)$request->getParam('monthsAmount');
+
+        $songService = $this->getSongService();
+        /* @var $songService \Songbook\Service\Song */
+
+        $songs = $songService->getCollectionUsedLastMonths(null, null, null, $monthsAmount, $limit);
+
+        $array = array();
+
+        foreach($songs as $song){
+            $array []= array( 'id' => $song->id, 'title' => (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ));
+        }
+
+        $response = $this->getResponse();
+        return $response->prepareData($array);
+    }
+
 
 
     public function getSuggestionTopPopularAction()

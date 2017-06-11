@@ -21,7 +21,7 @@ class Timestamp extends Type
 
     public function getSQLDeclaration (array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return self::TIMESTAMP;
+        return 'TIMESTAMP';
     }
 
     public function convertToDatabaseValue ($value, AbstractPlatform $platform)

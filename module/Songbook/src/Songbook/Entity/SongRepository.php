@@ -107,6 +107,37 @@ class SongRepository extends EntityRepository
         }
     }
 
+    public function findUsedLastMonthsWithHeaders(\Songbook\Entity\Profile $profile, array $criteria = null, array $orderBy = null, $monthsAmount = 2, $limit = null)
+    {
+        $qb = $this->createQueryBuilderCommon($criteria, $orderBy, null, 0);
+        $this->modifyQueryForHeaders($qb, $profile->user);
+
+        $qb->innerJoin('t.concertItem', 'i');
+        $qb->innerJoin('i.concert', 'c');
+
+        $qb->andWhere('c.profile = :profileId');
+        $qb->andWhere('c.time > :interval');
+
+        $qb->setParameter('profileId', $profile->id);
+        $qb->setParameter('interval', new \DateTime('- ' . (int) $monthsAmount . ' months'));
+
+        $qb->groupBy('t.id');
+
+        $query = $qb->getQuery();
+
+        try {
+            $data = $query->getResult();
+            shuffle($data);
+            if (! is_null($limit)) {
+                return array_slice($data, 0, $limit);
+            } else {
+                return $data;
+            }
+        } catch (NoResultException $e) {
+            return array();
+        }
+    }
+
     // rename to findByUserWithHeaders
     public function findByUserWithHeaders(\User\Entity\User $user, array $criteria = null, array $orderBy = null, $limit = null, $offset = null)
     {

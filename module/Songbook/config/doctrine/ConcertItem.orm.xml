@@ -10,7 +10,10 @@ http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 		</id>
 		<field name="order" column="`order`" type="integer" />
 		<field name="create_time" type="timestamp" />
-		<many-to-one field="concert" target-entity="Concert" />
-		<many-to-one field="song" target-entity="Song" />
+		<many-to-one field="concert" target-entity="Concert" inversed-by="items"/>
+		<many-to-one field="song" target-entity="Song" inversed-by="concertItems"/>
+		<many-to-one field="concertGroup" target-entity="ConcertGroup" inversed-by="concertItems">
+			<join-column name="concert_item_id" referenced-column-name="id" />
+		</many-to-one>
 	</entity>
 </doctrine-mapping>

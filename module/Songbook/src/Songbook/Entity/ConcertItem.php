@@ -9,34 +9,18 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ConcertItem
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer");
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
     protected $id;
 
-    /**
-     * @ORM\Column(type="timestamp")
-     */
     protected $create_time;
 
-    /**
-     * @ORM\Column(name="`order`", type="integer", options={"unsigned"=true})
-     */
     protected $order;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Concert", inversedBy="items")
-     **/
     private $concert;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Song", cascade="ALL")
-     **/
+
     private $song;
+
+    private $concertGroup;
 
 
     /**

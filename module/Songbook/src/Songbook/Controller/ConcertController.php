@@ -79,14 +79,14 @@ class ConcertController extends AbstractActionController {
     public function compositeAction()
     {
         // js requirements
-        $this->getViewHelper('HeadScript')->appendFile('/js/impromptu/jquery-impromptu.js');
-        $this->getViewHelper('HeadScript')->appendFile('/js/jquery-sortable.js');
-        $this->getViewHelper('HeadLink')->appendStylesheet('/js/impromptu/jquery-impromptu.css');
+        $this->getViewHelper('HeadScript')->appendFile('/assets/bower_components/jquery-ui/jquery-ui.min.js');
+        $this->getViewHelper('HeadScript')->appendFile('/assets/bower_components/jquery-impromptu/dist/jquery-impromptu.min.js');
+        $this->getViewHelper('HeadScript')->appendFile('/assets/bower_components/jquery-sortable/source/js/jquery-sortable-min.js');
+        $this->getViewHelper('HeadLink')->appendStylesheet('/assets/bower_components/jquery-impromptu/dist/jquery-impromptu.min.css');
 
-        $this->getViewHelper('HeadScript')->appendFile('/js/jquery-ui/jquery-ui.min.js');
-        $this->getViewHelper('HeadLink')->appendStylesheet('/js/jquery-ui/jquery-ui.min.css');
+        $this->getViewHelper('HeadLink')->appendStylesheet('/assets/bower_components/jquery-ui/themes/base/jquery-ui.min.css');
 
-        $this->getViewHelper('HeadScript')->appendFile('/js/songbook/composite.js');
+        $this->getViewHelper('HeadScript')->appendFile('/assets/js/songbook/composite.js');
 
         $id = $this->params('id', null);
 

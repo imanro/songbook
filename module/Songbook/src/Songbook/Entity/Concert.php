@@ -17,33 +17,16 @@ class Concert implements InputFilterAwareInterface
 {
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer");
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
      * @var int
      */
     protected $id;
 
-    /**
-     * @ORM\Column(type="timestamp")
-     */
     protected $create_time;
 
-    /**
-     * @ORM\Column(name="`time`", type="timestamp")
-     */
     protected $time;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Profile")
-     */
     protected $profile;
 
-    /**
-     * @ORM\OneToMany(targetEntity="ConcertItem", mappedBy="concert")
-     * @ORM\OrderBy({"order" = "ASC", "id" = "ASC"})
-     */
     protected $items;
 
     /**

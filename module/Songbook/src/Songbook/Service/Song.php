@@ -160,6 +160,30 @@ class Song
         return $data;
     }
 
+    public function getCollectionUsedLastMonths(\Songbook\Entity\Profile $profile = null, array $criteria = null, array $orderBy = null, $monthsAmount = 2, $limit = null)
+    {
+        if (is_null($profile)) {
+            // get current user
+            $userService = $this->getUserService();
+            $user = $userService->getCurrentUser();
+
+            // get active profile
+            $profileService = $this->getProfileService();
+            $profile = $profileService->getCurrentByUser($user);
+        }
+
+        if(is_null($limit)){
+            $limit = 10;
+        }
+
+        // take all concerts
+        $data = $this->getEntityManager()
+            ->getRepository('Songbook\Entity\Song')
+            ->findUsedLastMonthsWithHeaders($profile, $criteria, $orderBy, $monthsAmount, $limit);
+
+        return $data;
+    }
+
     public function getCollectionPopular(\Songbook\Entity\Profile $profile = null, array $criteria = null, array $orderBy = null, $limit = null, $offset = null)
     {
         if (is_null($profile)) {

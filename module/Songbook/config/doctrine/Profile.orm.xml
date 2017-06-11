@@ -10,7 +10,7 @@ http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 		</id>
 		<field name="name" type="string" />
 		<field name="create_time" type="timestamp" />
-		<one-to-many field="concerts" target-entity="Concert" />
+		<one-to-many field="concerts" target-entity="Concert" mapped-by="profile"/>
 		<many-to-one field="user" target-entity="User\Entity\User" />
 	</entity>
 </doctrine-mapping>
