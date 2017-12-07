@@ -1,0 +1,75 @@
+<?php
+namespace Songbook\Controller;
+
+use Songbook\Entity\Content;
+
+/* @var $concert \Songbook\Entity\Concert */
+/* @var $songService \Songbook\Service\Song */
+/* @var $contentService \Songbook\Service\Content */
+?>
+<div id="content_process_block" class="content_process_block content-process-block row">
+<div class="wrapper">
+<div class="col-sm-12">
+
+    <?php
+	$concertIdElement = new \Zend\Form\Element\Hidden('concert_id');
+	$concertIdElement->setValue($concert->id);
+    $concertIdElement->setAttributes(array('id' => 'concert_id'));
+
+    $buttonComposeEmail = new \Zend\Form\Element\Button('button');
+    $buttonComposeEmail->setLabel("Выслать на e-mail");
+    $buttonComposeEmail->setAttributes(array('type' => 'button', 'id' => 'content_email_compose', 'class' => 'btn btn-default'));
+
+    $buttonCreatePdf = new \Zend\Form\Element\Button('button');
+    $buttonCreatePdf->setLabel("Сделать единый PDF");
+    $buttonCreatePdf->setAttributes(array('type' => 'button', 'id' => 'content_pdf_compile', 'class' => 'btn btn-default'));
+	?>
+    <div class="btn-toolbar">
+		<div class="btn-group">
+            <?= $this->formButton($buttonComposeEmail); ?>
+            <?= $this->formButton($buttonCreatePdf); ?>
+		</div>
+	</div>
+
+	<h3><?= date('j.m.Y', $concert->time); ?></h3>
+
+<?php
+    $functionalTypeElement = new \Zend\Form\Element\Select('functional_type_filter');
+    $functionalTypeElement->setAttributes(array('class' => 'functional_type_filter form-control'));
+    $functionalTypeElement->setLabelAttributes(array('class' => 'control-label col-sm-1'));
+    $functionalTypeElement->setValueOptions(array_merge(array(0 => ''), Content::getFunctionalTypes()));
+    $functionalTypeElement->setLabel("Выбор по типу файла:");
+?>
+
+	<?= $this->formInput($concertIdElement); ?>
+
+    <div class="form-horizontal">
+        <div class="form-group">
+            <?= $this->formLabel($functionalTypeElement); ?>
+
+            <div class="col-sm-1">
+                <?= $this->formSelect($functionalTypeElement); ?>
+            </div>
+        </div>
+    </div>
+
+
+	<div class="lists">
+    <ol class="list concert-items concert_items">
+        <?php foreach($songService->getCollectionByConcert($concert) as $song): ?>
+			<li class="song-title"><a href="/song/view/<?= $song->id ?>"><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?></a></li>
+
+            <?php
+            $items = $songService->getSongContent($song, array(Content::TYPE_GDRIVE_CLOUD_FILE, Content::TYPE_LINK));
+            ?>
+            <?php if(count($items)): ?>
+            <?= $this->partial('songbook/partials/content-items.phtml', array('contents' => $items, 'contentService' => $contentService)); ?>
+            <?php endif; ?>
+
+        <?php endforeach; ?>
+    </ol>
+	</div>
+
+</div>
+</div>
+</div>

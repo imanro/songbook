@@ -1,18 +1,11 @@
 <?php
 namespace Songbook\Model;
 use Zend\Db\Sql\Sql;
-use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
-use Doctrine\ORM\EntityManager;
 use PDO;
 use DateTime;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Songbook\Entity\Song;
-use Songbook\Entity\Concert;
-use Songbook\Entity\ConcertItem;
-use Songbook\Entity\Profile;
-use User\Entity\User;
 
 class SongImport
 {

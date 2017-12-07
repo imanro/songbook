@@ -107,30 +107,4 @@ class Concert implements InputFilterAwareInterface
         }
     }
 
-    /**
-     * @return \Sonbook\Model\ConcertService
-     */
-    protected function getConcertService ()
-    {
-        if (! $this->concertService) {
-            $sm = $this->getServiceLocator();
-            $this->concertService = $sm->get('Songbook\Service\Concert');
-        }
-
-        return $this->concertService;
-    }
-
-    /**
-     * @return \Sonbook\Model\SongService
-     */
-    protected function getSongService ()
-    {
-        if (! $this->songService) {
-            $sm = $this->getServiceLocator();
-            $this->songService = $sm->get('Songbook\Service\Song');
-        }
-
-        return $this->songService;
-    }
-
 }

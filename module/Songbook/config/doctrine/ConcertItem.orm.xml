@@ -13,7 +13,7 @@ http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 		<many-to-one field="concert" target-entity="Concert" inversed-by="items"/>
 		<many-to-one field="song" target-entity="Song" inversed-by="concertItems"/>
 		<many-to-one field="concertGroup" target-entity="ConcertGroup" inversed-by="concertItems">
-			<join-column name="concert_item_id" referenced-column-name="id" />
+			<join-column name="concert_group_id" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
 		</many-to-one>
 	</entity>
 </doctrine-mapping>

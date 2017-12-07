@@ -3,7 +3,15 @@ namespace Ez\Api;
 
 use Zend\Mvc\Controller\AbstractController;
 use Zend\Mvc\MvcEvent;
+use Zend\View\Model\JsonModel;
 
+/**
+ * Class ConcertAjaxController
+ * @package Songbook\Controller
+ *
+ * @method Request getRequest()
+ * @method Response getResponse()
+ */
 class Controller extends AbstractController
 {
 
@@ -44,28 +52,60 @@ class Controller extends AbstractController
      * @return mixed
      * @throws Exception\DomainException
      */
-    public function onDispatch (MvcEvent $e)
+    public function onDispatch(MvcEvent $e)
     {
         $routeMatch = $e->getRouteMatch();
-        if (! $routeMatch) {
+        if (!$routeMatch) {
             /**
-             *
              * @todo Determine requirements for when route match is missing.
              *       Potentially allow pulling directly from request metadata?
              */
-            throw new Exception\DomainException(
-                    'Missing route matches; unsure how to retrieve action');
+            throw new Exception\DomainException('Missing route matches; unsure how to retrieve action');
         }
 
         $action = $routeMatch->getParam('action', 'not-found');
         $method = static::getMethodFromAction($action);
 
-        if (! method_exists($this, $method)) {
+        if (!method_exists($this, $method)) {
             $method = 'notFoundAction';
         }
 
         $actionResponse = $this->$method();
         $e->setResult($actionResponse);
+
+        // small trick
+        if($actionResponse instanceof Response){
+            if(($content = $actionResponse->getContent()) instanceof JsonModel){
+                $actionResponse->setContent($content->serialize());
+            }
+        }
+
         return $actionResponse;
     }
+
+
+
+
+
+        /*
+        public function onDispatch (MvcEvent $e)
+        {
+            $routeMatch = $e->getRouteMatch();
+            if (! $routeMatch) {
+                throw new Exception\DomainException(
+                        'Missing route matches; unsure how to retrieve action');
+            }
+
+            $action = $routeMatch->getParam('action', 'not-found');
+            $method = static::getMethodFromAction($action);
+
+            if (! method_exists($this, $method)) {
+                $method = 'notFoundAction';
+            }
+
+            $actionResponse = $this->$method();
+            $e->setResult($actionResponse);
+            return $actionResponse;
+        }
+        */
 }

@@ -1,10 +1,41 @@
-<?php /* @var $item Content */ ?>
-<?php if($item->type === Content::TYPE_GDRIVE_CLOUD_FILE): ?>
-    <li data-content-id="<?= $item->id ?>" data-content-type="<?= $item->type ?>" data-content-mime-type="<?= $item->mime_type ?>" class="list_item"><a href="https://drive.google.com/open?id=<?= $item->content ?>"><img class="mime-icon" src="/img/mime-types/<?= $item->getMimeIconName() ?>" /> <?= $item->file_name ?></a></li>
-<?php elseif($item->type === Content::TYPE_LINK): ?>
-    <?php $service = $contentService->getContentLinkService($item); ?>
-    <?php if ($service && ($code = $service->getEmbedCode($item))): ?>
-        <?php $serviceName = $contentService->getContentLinkServiceName($item); ?>
-        <li data-content-id="<?= $item->id ?>" data-content-type="<?= $item->type ?>" data-content-mime-type="<?= $item->mime_type ?>" data-content-link-service="<?= $serviceName; ?>" class="list_item"><div class="video-container"><?= $code; ?></div></li>
-    <?php endif; ?>
-<?php endif; ?>
+<?php
+namespace Songbook\Controller;
+
+use Songbook\Entity\Content;
+
+/* @var $contents \Songbook\Entity\Content[] */
+/* @var $contentService \Songbook\Service\Content */
+/* @var $isCreateHidden boolean */
+/* @var $hiddenName text */
+
+if(!isset($isCreateHidden)){
+    $isCreateHidden = false;
+}
+
+if(!isset($hiddenName)){
+    $hiddenName = 'content[]';
+}
+?>
+<ul class="list content-items content_items">
+    <?php foreach ($contents as $item): ?>
+		<?php if($isCreateHidden): ?>
+			<?php
+			$hiddenElement = new \Zend\Form\Element\Hidden($hiddenName);
+			$hiddenElement->setValue($item->id);
+			?>
+            <?= $this->formHidden($hiddenElement); ?>
+		<?php endif; ?>
+
+
+        <?php /* @var $item Content */ ?>
+        <?php if($item->type === Content::TYPE_GDRIVE_CLOUD_FILE): ?>
+			<li data-content-id="<?= $item->id ?>" data-content-type="<?= $item->type ?>" data-content-mime-type="<?= $item->mime_type ?>" class="list_item"><a href="https://drive.google.com/open?id=<?= $item->content ?>"><img class="mime-icon" src="/img/mime-types/<?= $item->getMimeIconName() ?>" /> <?= $item->file_name ?></a></li>
+        <?php elseif($item->type === Content::TYPE_LINK): ?>
+            <?php $service = $contentService->getContentLinkService($item); ?>
+            <?php if ($service && ($code = $service->getEmbedCode($item))): ?>
+                <?php $serviceName = $contentService->getContentLinkServiceName($item); ?>
+				<li data-content-id="<?= $item->id ?>" data-content-type="<?= $item->type ?>" data-content-mime-type="<?= $item->mime_type ?>" data-content-link-service="<?= $serviceName; ?>" class="list_item"><div class="video-container"><?= $code; ?></div></li>
+            <?php endif; ?>
+        <?php endif; ?>
+    <?php endforeach; ?>
+</ul>

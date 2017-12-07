@@ -1,47 +1,64 @@
 body {
-    padding-top: 60px;
-    padding-bottom: 40px;
 }
 
-.clear {
-	clear: both;
+.clearfix:before, .clearfix:after {
+    content: " ";
+    display: table;
 }
+
+.clearfix:after {
+    clear: both;
+}
+
 
 .zf-green {
     color: #68b604;
 }
 
-.btn-success {
-  background-color: #57a900;
-  background-image: -moz-linear-gradient(top, #70d900, #57a900);
-  background-image: -ms-linear-gradient(top, #70d900, #57a900);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#70d900), to(#57a900));
-  background-image: -webkit-linear-gradient(top, #70d900, #57a900);
-  background-image: -o-linear-gradient(top, #70d900, #57a900);
-  background-image: linear-gradient(top, #70d900, #57a900);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#70d900', endColorstr='#57a900', GradientType=0);
-}
 
 /* tb overwriting */
-label {
-	font-weight: normal;
-}
 
-.btn-success:hover,
-.btn-success:active,
-.btn-success.active,
-.btn-success.disabled,
-.btn-success[disabled] {
-  background-color: #57a900;
-}
-
-.btn-success:active, .btn-success.active {
-  background-color: #57a900;
-}
 
 nav {
 	display: none;
 }
+
+/* ------------------------------------ */
+/* Layout related */
+.side-menu li {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background: #ddd;
+    font-weight: bold;
+    border-right: solid 4px #337ab7;
+}
+.side-menu li.site-logo {
+    color: #fff;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-weight: normal;
+    font-size: 32px;
+    background: #333;
+    border-right: none;
+}
+
+/* ------------------------------------ */
+/* Common */
+fieldset {
+    padding: 10px;
+    border: solid 1px silver;
+}
+
+legend {
+    font-size: 16px;
+    width: auto;
+    border: none;
+    margin: 0;
+    padding: 0 5px;
+}
+
 
 ul.list {
 	list-style-type: none;
@@ -56,7 +73,7 @@ ul.list {
 }
 
 #similar-cont ul {
-	
+
 	height: 480px;
 	overflow: scroll;
 }
@@ -83,16 +100,128 @@ div.container a.brand {
 	color: #060;
 }
 
+footer {
+    clear: both;
+}
+
+/* ------------------------------------ */
 /* concert composite */
 
+#search-block {
+    margin-top: 40px;
+}
+
+.song-id {
+    color: #aaa;
+}
+
 /* sortable conf */
-#concert-items li {
-	width: 400px;
+#concert-block h3 {
+    margin-bottom: 20px;
+}
+#concert-block .btn-toolbar {
+    margin-top: 10px;
+    clear: both;
+}
+
+#concert-block ol.concert-items {
+    margin-top: 20px;
+    counter-reset: concert-list-1;
+    padding: 0 15px;
+}
+
+
+#concert-block ol.concert-items li {
+
+	width: 500px;
 	margin: 0 0 5px 0;
 	border: solid 1px #ccc;
 	background: #eee;
-	padding: 0 4px;
-	cursor: grab;
+    padding: 0 4px;
+    list-style-type: none;
+}
+
+#concert-block ol.concert-items li a {
+    color: #999;
+}
+
+#concert-block ol.concert-items li .content {
+    cursor: pointer;
+    position: relative;
+}
+
+#concert-block ol.concert-items li .item-controls {
+    position: absolute;
+    right: 0;
+    margin-right: 5px;
+    color: #999;
+}
+
+#concert-block ol.concert-items li .control {
+    cursor: pointer;
+}
+#concert-block ol.concert-items li .control.drag-handle {
+    cursor: grab;
+    cursor: -webkit-grab;
+}
+
+
+#concert-block ol.concert-items li .content:before {
+    counter-increment: concert-list-1; /* Увеличиваем значение счетчика */
+    content: counter(concert-list-1) ". "; /* Выводим число */
+}
+
+#concert-block ol.concert-items li.container {
+    width: 520px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+#concert-block ol.concert-items li.container:before {
+    counter-increment: none;
+    content: '';
+}
+
+#concert-block ol.concert-items li {
+
+}
+
+#concert-block ol.concert-items li.selected {
+    background: #a3cff5;
+}
+
+#concert-block ol.concert-items ol {
+    padding: 10px 20px 5px;
+    border: solid 1px #999;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#concert-block ol.concert-items ol li {
+    width: 480px;
+}
+
+#concert-block ol.concert-items ol:before{
+    content:attr(data-header);
+    font-size:120%;
+    line-height: 30px;
+}
+
+.concert-items .content-items li {
+    padding: 0 4px;
+}
+.concert-items .content-items li.selected {
+    background: #a3cff5;
+}
+
+
+#content-process-block ol.concert-items li.song-title {
+    font-size: 24px;
+}
+
+ul.content-items .mime-icon {
+    width: 32px; height: 32px;
 }
 
 body.dragging, body.dragging * {
@@ -105,11 +234,11 @@ body.dragging, body.dragging * {
   z-index: 2000;
 }
 
-#concert-items li.placeholder {
+.concert-items li.placeholder {
   position: relative;
   /** More li styles **/
 }
-#concert-items li.placeholder:before {
+.concert-items li.placeholder:before {
   position: absolute;
   left: -10px;
   top: -10px;
@@ -125,4 +254,36 @@ body.dragging, body.dragging * {
 
 .song-metadata .date {
 	color: #c00;
+}
+
+/* Content Video */
+.content-video-list {
+
+}
+.content-video-list li {
+    display: inline-block;
+    margin: 1Em -0.36Em -0.36Em -0.36Em;
+    width: 410px;
+}
+
+.content-video-list li .video-container {
+    float: left;
+}
+
+.content-video-list li .control {
+    float: left;
+    color: #999;
+    margin-top: 2px;
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+/* Content process */
+.content-process-block .btn-toolbar {
+    margin-top: 40px;
+}
+
+/* Compose Email */
+.compose-email-block .mail-body {
+    height: 20Em;
 }

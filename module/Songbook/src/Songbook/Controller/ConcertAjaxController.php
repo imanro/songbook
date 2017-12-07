@@ -2,18 +2,14 @@
 
 namespace Songbook\Controller;
 
-use Ez\Api\Controller;
+use Ez\Api\Controller as ApiController;
 use Ez\Api\Request;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
-use Doctrine\ORM\EntityManager;
-use Ez\Api\Exception;
 
-class ConcertAjaxController extends Controller
+class ConcertAjaxController extends ApiController
 {
 
     /**
-     * @var \User\Service\Song
+     * @var \Songbook\Service\Song
      */
     protected $songService;
 
@@ -45,7 +41,7 @@ class ConcertAjaxController extends Controller
 
         $request->validate();
 
-        $date = $this->getRequest()->getParam('date');
+
         $dateTime = \DateTime::createFromFormat('d-m-Y', $request->getParam('date'));
         $timestamp = $dateTime->getTimestamp();
 
@@ -57,21 +53,14 @@ class ConcertAjaxController extends Controller
         $profileService = $this->getProfileService();
         $profile = $profileService->getCurrentByUser($user);
 
-        $data = array(
-            'time' => $timestamp
-        );
         $response = $this->getResponse();
-        try {
-            $concertService = $this->getConcertService();
-            $concert = $concertService->createConcert($profile, array('time' => $timestamp));
 
-            return $response->prepareData(array(
-                'id' => $concert->id
-            ));
+        $concertService = $this->getConcertService();
+        $concert = $concertService->createConcert($profile, array('time' => $timestamp));
 
-        } catch (Exception $e) {
-            throw new Exception($e);
-        }
+        return $response->prepareData(array(
+            'id' => $concert->id
+        ));
     }
 
     public function createConcertItemAction()
@@ -156,12 +145,13 @@ class ConcertAjaxController extends Controller
 
         $concertId = $request->getParam('concertId');
         $concertItemIds = $request->getParam('concertItemIds');
-        $concertService = $this->getConcertService();
 
         if (! is_array($concertItemIds) || ! count($concertItemIds)) {
             throw new \Ez\Api\Exception(
                     'wrong request, concertItemIds must be non-empty array');
         }
+
+        $concertService = $this->getConcertService();
 
         try {
             $concert = $concertService->getConcertById($concertId);
@@ -178,8 +168,135 @@ class ConcertAjaxController extends Controller
     {
     }
 
+    public function createConcertGroupAction()
+    {
+        $request = $this->getRequest();
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(
+            array(
+                'concertId' => true,
+                'concertItemsIds' => true
+            ));
+
+        $request->validate();
+
+        $concertId = $request->getParam('concertId');
+        $concertItemsIds = $request->getParam('concertItemsIds');
+        $concertGroupName = $request->getParam('concertGroupName');
+
+        $concertService = $this->getConcertService();
+
+        try {
+            $concert = $concertService->getConcertById($concertId);
+        } catch (\Exception $e) {
+            throw new \Ez\Api\Exception($e);
+        }
+
+        if (! is_array($concertItemsIds) || ! count($concertItemsIds)) {
+            throw new \Ez\Api\Exception(
+                'wrong request, concertItemsIds must be non-empty array');
+        }
+
+        $concertItems = $concertService->getConcertItemsByIds($concertItemsIds);
+
+        if ( ! count($concertItems)) {
+            throw new \Ez\Api\Exception(
+                'such concert items was not found');
+        }
+
+        try {
+            $concertGroup = $concertService->createConcertGroup($concert, $concertItems, $concertGroupName);
+            $response = $this->getResponse();
+            return $response->prepareData(array('concertGroup' => $concertGroup));
+        } catch (\Exception $e) {
+            throw new \Ez\Api\Exception($e);
+        }
+    }
+
+    public function deleteConcertGroupAction()
+    {
+        $request = $this->getRequest();
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(
+            array(
+                'id' => true
+            ));
+
+        $request->validate();
+
+        $id = $request->getParam('id');
+        $concertService = $this->getConcertService();
+
+        try {
+            $item = $concertService->getConcertGroupById($id);
+        } catch (\Exception $e) {
+            throw new \Ez\Api\Exception($e);
+        }
+
+        $concertService->deleteConcertGroup($item);
+        $response = $this->getResponse();
+
+        return $response->prepareData(array('id' => $id));
+    }
+
+    public function addConcertItemIntoConcertGroupAction()
+    {
+        $request = $this->getRequest();
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(
+            array(
+                'concertItemId' => true,
+                'concertGroupId' => true
+            ));
+
+        $request->validate();
+
+        $concertService = $this->getConcertService();
+
+        try {
+            $concertItem = $concertService->getConcertItemById($request->getParam('concertItemId'));
+        } catch(\Exception $e) {
+            throw new \Ez\Api\Exception($e);
+        }
+
+        try {
+            $concertGroup = $concertService->getConcertGroupById($request->getParam('concertGroupId'));
+        } catch (\Exception $e) {
+            throw new \Ez\Api\Exception($e);
+        }
+
+        $concertService->addConcertItemIntoConcertGroup($concertItem, $concertGroup);
+        $response = $this->getResponse();
+        return $response->prepareStatus();
+    }
+
+    public function deleteConcertItemFromConcertGroupsAction()
+    {
+        $request = $this->getRequest();
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(
+            array(
+                'concertItemId' => true,
+            ));
+
+        $request->validate();
+
+        $concertService = $this->getConcertService();
+
+        try {
+            $concertItem = $concertService->getConcertItemById($request->getParam('concertItemId'));
+        } catch(\Exception $e) {
+            throw new \Ez\Api\Exception($e);
+        }
+
+
+        $concertService->deleteConcertItemFromConcertGroups($concertItem);
+        $response = $this->getResponse();
+        return $response->prepareStatus();
+    }
+
     /**
-     * @return \Sonbook\Model\SongService
+     * @return \Songbook\Service\Song
      */
     protected function getSongService ()
     {
@@ -192,7 +309,7 @@ class ConcertAjaxController extends Controller
     }
 
     /**
-     * @return \Sonbook\Model\ConcertService
+     * @return \Songbook\Service\Concert
      */
     protected function getConcertService ()
     {
@@ -205,7 +322,7 @@ class ConcertAjaxController extends Controller
     }
 
     /**
-     * @return \Sonbook\Model\UserService
+     * @return \User\Service\User
      */
     protected function getUserService ()
     {
@@ -219,7 +336,7 @@ class ConcertAjaxController extends Controller
 
 
     /**
-     * @return \Sonbook\Model\ProfileService
+     * @return \Songbook\Service\Profile
      */
     protected function getProfileService ()
     {

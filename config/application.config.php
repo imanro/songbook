@@ -1,11 +1,14 @@
 <?php
 
 mb_internal_encoding('utf-8');
+// google drive config
+define('GOOGLE_APPLICATION_CREDENTIALS',  realpath(dirname(__FILE__)) . '/songbook-backend-788ae928d2d9.jsondrive-php-quickstart.json');
+define('GOOGLE_DRIVE_CLIENT_SECRET_PATH', realpath(dirname(__FILE__)) . '/client_secret.json');
 
 return array(
     // This should be an array of module namespaces used in the application.
     'modules' => array(
-        /* 'ZendDeveloperTools', */
+        'ZendDeveloperTools',
         'DoctrineModule',
         'DoctrineORMModule',
         'Application',

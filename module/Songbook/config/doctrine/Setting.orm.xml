@@ -4,12 +4,11 @@
                       xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <entity name="Songbook\Entity\ConcertGroup" table="concert_group">
-        <id name="id" type="integer">
-            <generator strategy="AUTO" />
-        </id>
-        <field name="name" type="string" nullable="true"/>
-        <one-to-many field="concertItems" target-entity="ConcertItem" mapped-by="concertGroup"/>
-        <many-to-one field="concert" target-entity="Concert" />
+    <entity name="Songbook\Entity\Setting" table="setting">
+        <id name="user" association-key="true" />
+        <id name="name" type="string" />
+        <field name="value" type="string" nullable="true"/>
+
+        <many-to-one field="user" target-entity="User\Entity\User" />
     </entity>
 </doctrine-mapping>

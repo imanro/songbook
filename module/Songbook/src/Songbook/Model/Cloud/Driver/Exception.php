@@ -13,4 +13,6 @@ class Exception extends \Exception {
     const CODE_UNABLE_TO_CREATE_ROOT_FOLDER = 3;
 
     const CODE_UNABLE_TO_CREATE_FOLDER = 4;
+
+    const CODE_UNABLE_TO_FIND_MIME_TYPE = 5;
 }

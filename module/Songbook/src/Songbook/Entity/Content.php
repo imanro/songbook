@@ -1,23 +1,26 @@
 <?php
 namespace Songbook\Entity;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
-use User\Entity\User;
+
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="content")
  *
  * @property int $id
+ * @property int $create_time
+ * @property string $type
+ * @property string $url
+ * @property string $content
+ * @property bool $is_favorite
+ * @property string $file_name
+ * @property string $mime_type
  *
+ * @property \Songbook\Entity\Song $song
+ * @property \User\Entity\User $user
  */
-class Content implements InputFilterAwareInterface
+class Content extends AbstractEntity implements InputFilterAwareInterface
 {
-
     /**
      * Header
      */
@@ -34,83 +37,43 @@ class Content implements InputFilterAwareInterface
     const TYPE_LINK = 'link';
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="integer");
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
+     * Link
      */
+    const TYPE_GDRIVE_CLOUD_FILE = 'gdrive_cloud_file';
+
+    const MIME_ICON_NAME_DEFAULT = 'text-plain.svg';
+
+    const FUNCTIONAL_TYPE_ALL = 1;
+
+    const FUNCTIONAL_TYPE_LYRICS = 2;
+
+    const FUNCTIONAL_TYPE_PRESENTATION = 3;
+
+    const FUNCTIONAL_TYPE_AUDIO = 4;
+
+    const FUNCTIONAL_TYPE_VIDEO = 5;
+
+    const FUNCTIONAL_TYPE_LYRICS_PDFS = 6;
+
     protected $id;
 
-    /**
-     * @ORM\Column(type="timestamp")
-     */
     protected $create_time;
 
-    /**
-     * @ORM\Column(type="enum", options={\Ez\Doctrine\DBAL\Types\Enum::RANGE:"header,inline,link"})
-     */
     protected $type;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
     protected $url;
 
-    /**
-     * @ORM\Column(type="string", length=65535, nullable=true)
-     */
     protected $content;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $is_favorite;
+    protected $is_favorite = 0;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Song")
-     */
+    protected $file_name;
+
+    protected $mime_type;
+
     protected $song;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\User\Entity\User")
-     */
     protected $user;
-
-    //protected $songDefaultHeader;
-    //protected $songFavoriteHeader;
-
-    /**
-     * Magic getter to expose protected properties.
-     *
-     * @param string $property
-     * @return mixed
-     */
-    public function __get ($property)
-    {
-        return $this->$property;
-    }
-
-    /**
-     * Magic setter to save protected properties.
-     *
-     * @param string $property
-     * @param mixed $value
-     */
-    public function __set ($property, $value)
-    {
-        $this->$property = $value;
-    }
-
-    /**
-     * Convert the object to an array.
-     *
-     * @return array
-     */
-    public function getArrayCopy ()
-    {
-        return get_object_vars($this);
-    }
 
     /**
      * Populate from an array.
@@ -144,6 +107,63 @@ class Content implements InputFilterAwareInterface
                             )
                         )
                     ));
+        }
+    }
+
+    public static function getFunctionalTypes()
+    {
+        return array(
+            self::FUNCTIONAL_TYPE_ALL => 'Все',
+            self::FUNCTIONAL_TYPE_LYRICS => 'Тексты',
+            self::FUNCTIONAL_TYPE_PRESENTATION => 'Слайды',
+            self::FUNCTIONAL_TYPE_AUDIO => 'Аудио',
+            self::FUNCTIONAL_TYPE_VIDEO => 'Видео',
+            self::FUNCTIONAL_TYPE_LYRICS_PDFS => 'PDF',
+        );
+    }
+
+    public static function getKnownMimeTypes()
+    {
+        return array(
+            'application/msword' => true,
+            'application/vnd.ms-powerpoint' => true,
+            'application/pdf' => true,
+            'text-plain' => true
+        );
+    }
+
+    public static function getMimeTypeSubstitute($mimeType)
+    {
+        $subst = array(
+            'application/vnd.google-apps.presentation' => 'application/vnd.ms-powerpoint',
+            'application/vnd.google-apps.document' => 'application/msword',
+            'application/vnd.oasis.opendocument.text' => 'application/msword',
+        );
+
+        if(isset($subst[$mimeType])){
+            return $subst[$mimeType];
+        } else {
+            return null;
+        }
+    }
+
+    public function getMimeIconName()
+    {
+        if(!is_null($this->mime_type)){
+
+            if(is_null($name = self::getMimeTypeSubstitute($this->mime_type))){
+                $name = $this->mime_type;
+            }
+
+            if(isset(self::getKnownMimeTypes()[$name])){
+                return str_replace('/', '-', $name) . '.svg';
+            } else {
+                return self::MIME_ICON_NAME_DEFAULT;
+            }
+
+
+        } else {
+            return self::MIME_ICON_NAME_DEFAULT;
         }
     }
 }

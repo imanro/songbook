@@ -4,7 +4,7 @@
  */
 ?>
 
-<div id="concert-composite-block">
+<div id="concert_composite_block" class="concert_composite_block concert-composite-block row">
 
 
 <div class="wrapper">
@@ -17,21 +17,25 @@ $element->setAttribute('id', 'concert-id');
 
 <?= $this->formInput($element); ?>
 
-<div class="col-md-8">
+<div class="col-sm-8">
 <div id="search-block">
 
 <?php
-$element = new \Zend\Form\Element\Text('search-song');
-$element->setAttribute('type', 'text');
-$element->setAttribute('class', 'search');
-$element->setAttribute('id', 'search-song');
-$element->setLabel("Поиск:");
-
+$searchElement = new \Zend\Form\Element\Text('search-song');
+$searchElement->setAttributes(array('type' => 'text', 'id' => 'search-song', 'class' => 'form-control search'));
+$searchElement->setLabelAttributes(array('class' => 'control-label col-sm-1'));
+$searchElement->setLabel("Поиск:");
 ?>
 
-<?= $this->formLabel($element); ?>
-<?= $this->formInput($element); ?>
+<div class="form-horizontal">
+<div class="form-group">
+<?= $this->formLabel($searchElement); ?>
 
+<div class="col-sm-11">
+<?= $this->formInput($searchElement); ?>
+</div>
+</div>
+</div>
 
 </div>
 
@@ -58,29 +62,41 @@ $element->setAttribute('id', 'master-song-id');
 <div id="concert-block">
 
 <?php
-$element = new \Zend\Form\Element\Button('button');
-$element->setAttribute('type', 'submit');
-$element->setAttribute('class', 'btn btn-primary');
-$element->setAttribute('id', 'concert-create');
-$element->setLabel("Новый");
-?>
+$buttonNewConcert = new \Zend\Form\Element\Button('button');
+$buttonNewConcert->setLabel("Новый концерт");
+$buttonNewConcert->setAttributes(array('type' => 'button', 'id' => 'concert-create', 'class' => 'btn btn-success'));
 
-<?= $this->formButton($element); ?>
+$buttonNewConcertGroup = new \Zend\Form\Element\Button('button');
+$buttonNewConcertGroup->setAttributes(array('type' => 'button', 'id' => 'concert-group-create', 'class' => 'btn btn-default'));
+$buttonNewConcertGroup->setLabel("Сгруппировать");
+
+$buttonRemoveConcertGroup = new \Zend\Form\Element\Button('button');
+$buttonRemoveConcertGroup->setAttributes(array('type' => 'button', 'id' => 'concert-group-delete', 'class' => 'btn btn-default'));
+$buttonRemoveConcertGroup->setLabel("Удалить группу");
+?>
 
 <h3>Репертуар на <?= date('j.m.Y', $concert->time); ?></h3>
 
-<ol id="concert-items">
-<?php foreach($songService->getCollectionByConcert($concert) as $song): ?>
+<div class="btn-toolbar">
+<div class="btn-group">
+<?= $this->formButton($buttonNewConcert); ?>
+</div>
+<div class="btn-group">
+<?= $this->formButton($buttonRemoveConcertGroup); ?>
+<?= $this->formButton($buttonNewConcertGroup); ?>
+</div>
 
-<?php /* @var $song \Songbook\Entity\Song */ ?>
-<li class="concert-item" data-id="<?= $song->currentConcertItem->id ?>"><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?> <a href="#" class="concert-item-delete" data-id=<?= $song->currentConcertItem->id ?>>[Уд.]</a></li>
-<?php endforeach; ?>
-</ol>
+<div class="btn-group">
+<a href="<?= $this->url('default', array('controller' => 'concert', 'action' => 'content-process', 'id' => $concert->id )) ?>" class="btn btn-default">Операции с файлами</a>
+</div>
+</div>
+
+<?= $this->partial('songbook/partials/concert-items.phtml', array('items' => $songService->getCollectionByConcert($concert))); ?>
 
 
 </div>
 </div>
-<div class="col-md-4">
+<div class="col-sm-4">
 <div id="long-not-used-cont">
 <h4 class="header" style="display:none">Давно не исполнялись</h4>
 </div>
@@ -89,9 +105,15 @@ $element->setLabel("Новый");
 <h4 class="header" style="display:none">Топ популярных</h4>
 </div>
 
+<div id="taken-last-months-cont">
+	<h4 class="header" style="display:none">Новые в течение последних {amount} месяцев</h4>
+</div>
+
 <div id="used-last-months-cont">
 <h4 class="header" style="display:none">Использовались последние {amount} месяца</h4>
 </div>
+
+
 
 
 </div>

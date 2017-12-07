@@ -1,17 +1,19 @@
 <?php
+
 $conf = array(
     'controllers' => array(
         'invokables' => array(
-            'Song' => 'Songbook\Controller\SongController',
-            'SongAjax' => 'Songbook\Controller\SongAjaxController',
-            'SongConsole' => 'Songbook\Controller\SongConsoleController',
-            'Tag' => 'Songbook\Controller\TagController',
-            'TagAjax' => 'Songbook\Controller\TagAjaxController',
-            'List' => 'Songbook\Controller\ListController',
-            'ListAjax' => 'Songbook\Controller\ListAjaxController',
-            'Sandbox' => 'Songbook\Controller\SandboxController',
-            'Concert' => 'Songbook\Controller\ConcertController',
-            'ConcertAjax' => 'Songbook\Controller\ConcertAjaxController',
+            'song' => 'Songbook\Controller\SongController',
+            'song-ajax' => 'Songbook\Controller\SongAjaxController',
+            'songConsole' => 'Songbook\Controller\SongConsoleController',
+            'tag' => 'Songbook\Controller\TagController',
+            'tagAjax' => 'Songbook\Controller\TagAjaxController',
+            'sandbox' => 'Songbook\Controller\SandboxController',
+            'concert' => 'Songbook\Controller\ConcertController',
+            'concertAjax' => 'Songbook\Controller\ConcertAjaxController',
+            'content' => 'Songbook\Controller\ContentController',
+            'oauth2' => 'Songbook\Controller\OAuth2Controller',
+            'content-ajax' => 'Songbook\Controller\ContentAjaxController',
         )
     ),
 
@@ -141,7 +143,37 @@ $conf = array(
                 )
             )
         )
-    )
+    ),
+
+    'paths' => array(
+        'tmp' => __DIR__ . '/../../../tmp'
+    ),
+
+    'cloud' => array(
+        'gdrive' => array(
+            'application_name' => 'Songbook',
+            'auth_config_path' => __DIR__ . '/../../../config/client_secrets.json',
+            'redirect_path' => '/oauth2/gdrive',
+            'session_ns' => 'gdrive',
+            'is_auth_offline' => true,
+            'offline_token_path' => __DIR__ . '/../../../.credentials/gdrive_token.json',
+        ),
+        'sync_time_threshold_seconds' => 600
+    ),
+
+    'session' => array(
+        'config' => array(
+            'class' => 'Zend\Session\Config\SessionConfig',
+            'options' => array(
+                'name' => 'songbook',
+            ),
+        ),
+        'storage' => 'Zend\Session\Storage\SessionArrayStorage',
+        'validators' => array(
+            'Zend\Session\Validator\RemoteAddr',
+            'Zend\Session\Validator\HttpUserAgent',
+        ),
+    ),
 );
 
 return $conf;

@@ -1,13 +1,6 @@
 <?php
 namespace Songbook\Service;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\ResultSet\ResultSet;
-use Doctrine\ORM\EntityManager;
-use PDO;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Songbook\Entity;
 
 class Profile
 {
@@ -40,7 +33,7 @@ class Profile
     }
 
     /**
-     * @param \Zend\ServiceManagerServiceLocatorInterface $sl
+     * @param \Zend\ServiceManager\ServiceLocatorInterface $sl
      */
     public function setServiceLocator (ServiceLocatorInterface $sl)
     {
@@ -69,7 +62,7 @@ class Profile
     }
 
     /**
-     * @return \Sonbook\Model\UserService
+     * @return \User\Service\User
      */
     protected function getUserService ()
     {

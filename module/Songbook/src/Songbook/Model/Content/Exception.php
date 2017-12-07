@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Songbook\Model\Content\Service;
+namespace Songbook\Model\Content;
 
 class Exception extends \Exception {
     const CODE_WRONG_SERVICE_NAME = 2;

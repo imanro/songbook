@@ -19,11 +19,7 @@ class SongRepository extends EntityRepository
 
         $query = $qb->getQuery();
 
-        try {
-            return $query->getSingleResult();
-        } catch (NoResultException $e) {
-            throw new \Exception('Not found');
-        }
+        return $query->getSingleResult();
     }
 
     public function findByHeaderWithHeaders(\User\Entity\User $user, $string, array $orderBy, $limit = null, $offset = null)
@@ -38,6 +34,7 @@ class SongRepository extends EntityRepository
 
         $query = $qb->getQuery();
 
+
         try {
             return $query->getResult();
         } catch (NoResultException $e) {
@@ -47,6 +44,14 @@ class SongRepository extends EntityRepository
 
     public function findByConcertWithHeaders(\Songbook\Entity\Concert $concert, array $criteria = null, array $orderBy = null, $limit = null, $offset = null)
     {
+        if ($orderBy === null) {
+            $orderBy = array(
+                'i.order' => 'ASC'
+            );
+        } else {
+            $orderBy = 'i.' . $orderBy;
+        }
+
         $qb = $this->createQueryBuilderCommon($criteria, $orderBy, $limit, $offset);
         $this->modifyQueryForHeaders($qb, $concert->profile->user);
 
@@ -107,6 +112,8 @@ class SongRepository extends EntityRepository
         }
     }
 
+
+
     public function findUsedLastMonthsWithHeaders(\Songbook\Entity\Profile $profile, array $criteria = null, array $orderBy = null, $monthsAmount = 2, $limit = null)
     {
         $qb = $this->createQueryBuilderCommon($criteria, $orderBy, null, 0);
@@ -116,7 +123,51 @@ class SongRepository extends EntityRepository
         $qb->innerJoin('i.concert', 'c');
 
         $qb->andWhere('c.profile = :profileId');
-        $qb->andWhere('c.time > :interval');
+        $qb->andWhere('(c.time > :interval AND c.time < :interval_yesterday)');
+
+        $qb->setParameter('profileId', $profile->id);
+        $qb->setParameter('interval', new \DateTime('- ' . (int) $monthsAmount . ' months'));
+        $qb->setParameter('interval_yesterday', new \DateTime('- 1 days'));
+
+        $qb->groupBy('t.id');
+
+        $query = $qb->getQuery();
+
+        try {
+            $data = $query->getResult();
+            shuffle($data);
+            if (! is_null($limit)) {
+                return array_slice($data, 0, $limit);
+            } else {
+                return $data;
+            }
+        } catch (NoResultException $e) {
+            return array();
+        }
+    }
+
+    public function findTakenLastMonthsWithHeaders(\Songbook\Entity\Profile $profile, array $criteria = null, array $orderBy = null, $monthsAmount = 6, $limit = null)
+    {
+//        $limit = 10;
+//        $monthsAmount = 10;
+        $qb = $this->createQueryBuilderCommon($criteria, $orderBy, null, 0);
+        $this->modifyQueryForHeaders($qb, $profile->user);
+
+        $qb->innerJoin('t.concertItem', 'i');
+        $qb->innerJoin('i.concert', 'c');
+
+        $qb->andWhere('c.profile = :profileId');
+        $qb->andWhere('c.time >= :interval');
+
+        $qb2 = $this->createQueryBuilder('s2');
+        $qb->andWhere(
+            $qb->expr()
+                ->notIn('t.id',
+                    $qb2->select('s2.id')
+                        ->innerJoin('s2.concertItem', 'i2')
+                        ->innerJoin('i2.concert', 'c2')
+                        ->where('c2.time < :interval')
+                        ->getDQL()));
 
         $qb->setParameter('profileId', $profile->id);
         $qb->setParameter('interval', new \DateTime('- ' . (int) $monthsAmount . ' months'));
@@ -128,6 +179,8 @@ class SongRepository extends EntityRepository
         try {
             $data = $query->getResult();
             shuffle($data);
+
+
             if (! is_null($limit)) {
                 return array_slice($data, 0, $limit);
             } else {
@@ -256,27 +309,31 @@ class SongRepository extends EntityRepository
         $query->setParameter(':userId', $user->id);
 
         $rsm->addJoinedEntityFromClassMetadata('Songbook\Entity\Content', 'f',
-                'a', 'favoriteHeader',
-                 array(
-                   'id' => 'f_id',
-                    'create_time' => 'f_create_time',
-                    'type' => 'f_type',
-                    'url' => 'f_url',
-                    'content' => 'f_content',
-                    'is_favorite' => 'f_is_favorite',
-                    'song_id' => 'f_song_id',
-                    'user_id' => 'f_user_id'
-                ) );
+            'a', 'favoriteHeader',
+            array(
+                'id' => 'f_id',
+                'create_time' => 'f_create_time',
+                'type' => 'f_type',
+                'url' => 'f_url',
+                'content' => 'f_content',
+                'file_name' => 'f_file_name',
+                'mime_type' => 'f_mime_type',
+                'is_favorite' => 'f_is_favorite',
+                'song_id' => 'f_song_id',
+                'user_id' => 'f_user_id'
+            ));
         $rsm->addJoinedEntityFromClassMetadata('Songbook\Entity\Content', 'h',
-                'a', 'defaultHeader',
-                array(
-                    'id' => 'h_id',
-                    'create_time' => 'h_create_time',
-                    'type' => 'h_type',
-                    'url' => 'h_url',
-                    'content' => 'h_content',
-                    'is_favorite' => 'h_is_favorite',
-                    'song_id' => 'h_song_id',
+            'a', 'defaultHeader',
+            array(
+                'id' => 'h_id',
+                'create_time' => 'h_create_time',
+                'type' => 'h_type',
+                'url' => 'h_url',
+                'content' => 'h_content',
+                'file_name' => 'h_file_name',
+                'mime_type' => 'h_mime_type',
+                'is_favorite' => 'h_is_favorite',
+                'song_id' => 'h_song_id',
                     'user_id' => 'h_user_id'
                 ));
     }

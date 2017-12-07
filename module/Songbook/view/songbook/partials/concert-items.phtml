@@ -1,7 +1,46 @@
 <?php
+/* @var $items \Songbook\Entity\Song[] */
+ ?>
+
+<ol class="concert-items list">
+<?php
 /**
- * Created by PhpStorm.
- * User: manro
- * Date: 14.06.17
- * Time: 18:42
+ * @var $prevConcertGroup \Songbook\Entity\ConcertGroup
  */
+$prevConcertGroup = null;
+
+$itemsCount = count($items);
+$counter = 0;
+?>
+<?php foreach($items as $song): ?>
+
+    <?php $concertGroup = $song->currentConcertItem->concertGroup; ?>
+    <?php if(!is_null($prevConcertGroup) && (is_null($concertGroup)
+            || $concertGroup->id != $prevConcertGroup->id)): ?>
+        </ol></li>
+    <?php endif; ?>
+
+
+    <?php if(!is_null($concertGroup) && (is_null($prevConcertGroup) || $prevConcertGroup->id != $concertGroup->id)): ?>
+        <li class="container">
+			<ol class="list group-container" data-header="<?= $concertGroup->name ?>" data-concert-group-id="<?= $concertGroup->id ?>">
+    <?php endif; ?>
+				<li class="concert-item draggable" data-id="<?= $song->currentConcertItem->id ?>" data-concert-group-id="<?= !is_null($concertGroup) ? $concertGroup->id : ''; ?>">
+					<div class="content"><?= (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ); ?>
+						<span class="song-id">[<?= $song->id; ?>]</span>
+
+						<span class="item-controls">
+							<a href="/song/view/<?= $song->id ?>"><span class="control fa fa-eye song-view" data-id="<?= $song->id ?>" aria-hidden="true"></span></a>
+							<span class="control fa fa-trash-o concert-item-delete" data-id="<?= $song->currentConcertItem->id ?>" aria-hidden="true"></span>
+							<span class="control drag-handle fa fa-bars" aria-hidden="true"></span>
+						</span>
+					</div>
+				</li>
+
+    <?php if(!is_null($concertGroup) && $counter == $itemsCount - 1): ?>
+        </ol></li>
+    <?php endif; ?>
+    <?php $prevConcertGroup = $concertGroup ?>
+    <?php $counter++; ?>
+<?php endforeach; ?>
+</ol>

@@ -1,29 +1,35 @@
 <?php
 namespace Songbook\Controller;
-use Zend\Form\Form;
-use Zend\Form\Element;
+use Songbook\Entity\Content;
 use Songbook\Form\SongEditForm;
 use Songbook\Entity\Song;
 use Songbook\Service;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use Doctrine\ORM\EntityManager;
 
 /**
  * @author manro
  */
-class SongController extends AbstractActionController
+class SongController extends FrontendController
 {
-
-    /**
-     * @var DoctrineORMEntityManager
-     */
-    protected $em;
-
     /**
      * @var \Songbook\Service\Song
      */
     protected $songService;
+
+    /**
+     * @var \Songbook\Service\Content
+     */
+    protected $contentService;
+
+    /**
+     * @var \User\Service\User
+     */
+    protected $userService;
+
+    /**
+     * \Doctrine\ORM\EntityManager
+     */
+    protected $em;
 
 
     public function indexAction ()
@@ -82,14 +88,26 @@ class SongController extends AbstractActionController
     {
         $id = (int) $this->params()->fromRoute('id', 0);
 
-        if (! $id) {
-            return $this->redirect()->toRoute('songbook');
+        $songService = $this->getSongService();
+        $contentService = $this->getContentService();
+
+        try {
+            $song = $songService->getSongById($id);
+        } catch( \Exception $e){
+            throw $e;
+            //return $this->notFoundAction();
         }
 
-        $song = $this->getEntityManager()->find('Songbook\Entity\Song', $id);
+        $files = $songService->getSongContent($song, Content::TYPE_GDRIVE_CLOUD_FILE);
+        $videos = $songService->getSongContent($song, Content::TYPE_LINK);
+        //$songService->addSongContent($song, '/tmp/blago', Content::TYPE_GDRIVE_CLOUD_FILE);
 
         return array(
-            'song' => $song
+            'song' => $song,
+            'files' => $files,
+            'videos' => $videos,
+            'songService' => $songService,
+            'contentService' => $contentService,
         );
     }
 
@@ -225,15 +243,28 @@ class SongController extends AbstractActionController
     }
 
     /**
-     * @return \Sonbook\Model\SongService
+     * @return \Songbook\Service\Song
      */
     protected function getSongService ()
     {
-        if (! $this->songService) {
+        if (is_null($this->songService)){
             $sm = $this->getServiceLocator();
             $this->songService = $sm->get('Songbook\Service\Song');
         }
+
         return $this->songService;
     }
 
+    /**
+     * @return \Songbook\Service\Content
+     */
+    protected function getContentService ()
+    {
+        if (is_null($this->contentService)){
+            $sm = $this->getServiceLocator();
+            $this->contentService = $sm->get('Songbook\Service\Content');
+        }
+
+        return $this->contentService;
+    }
 }

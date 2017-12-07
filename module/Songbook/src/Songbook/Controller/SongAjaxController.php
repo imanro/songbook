@@ -12,7 +12,7 @@ class SongAjaxController extends Controller
 {
 
     /**
-     * @var \User\Service\Song
+     * @var \Songbook\Service\Song
      */
     protected $songService;
 
@@ -127,6 +127,33 @@ class SongAjaxController extends Controller
         return $response->prepareData($array);
     }
 
+    public function getSuggestionTakenLastMonthsAction()
+    {
+        $request = $this->getRequest();
+        /* @var $request \Ez\Api\Request */
+        $request->setRequiredMethod(Request::METHOD_POST);
+        $request->setRequiredParams(array(
+            'limit' => true,
+            'monthsAmount' => true
+        ));
+
+        $limit = (int)$request->getParam('limit');
+        $monthsAmount = (int)$request->getParam('monthsAmount');
+
+        $songService = $this->getSongService();
+        /* @var $songService \Songbook\Service\Song */
+
+        $songs = $songService->getCollectionTakenLastMonths(null, null, null, $monthsAmount, $limit);
+
+        $array = array();
+
+        foreach($songs as $song){
+            $array []= array( 'id' => $song->id, 'title' => (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content ));
+        }
+
+        $response = $this->getResponse();
+        return $response->prepareData($array);
+    }
 
 
     public function getSuggestionTopPopularAction()
@@ -172,7 +199,7 @@ class SongAjaxController extends Controller
     }
 
     /**
-     * @return \Sonbook\Service\Song
+     * @return \Songbook\Service\Song
      */
     protected function getSongService ()
     {

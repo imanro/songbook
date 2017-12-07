@@ -20,6 +20,7 @@
     "bootstrap": "^3.3.7",
     "jquery-ui": "^1.12.1",
     "jquery-impromptu": "^6.2.3",
-    "jquery-sortable": "^0.9.13"
+    "jquery-sortable": "^0.9.13",
+    "components-font-awesome": "^4.7.0"
   }
 }

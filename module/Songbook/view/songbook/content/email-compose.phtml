@@ -2,13 +2,112 @@
 namespace Songbook\Controller;
 
 /* @var $contents \Songbook\Entity\Content[] */
+/* @var $concert \Songbook\Entity\Concert */
+/* @var $contentService \Songbook\Service\Content */
+/* @var $concertService  \Songbook\Service\Concert */
 ?>
 
 <div class="compose_email_block compose-email-block row">
     <div class="wrapper">
         <div class="col-sm-12">
-            <?php foreach ($contents as $item): ?>
-            <?php endforeach; ?>
+
+			<?php
+
+			$bodyText = $concertService->formatSongListString($concert, true);
+			$bodyText .= "\n\n--\nThis mail is created with Songbook app";
+
+            $form = new \Zend\Form\Form();
+            $form->setAttribute('action', $this->url('default', array('controller' => 'content', 'action' => 'email-send')));
+            $form->setAttribute('method', 'post');
+
+            $toElement = new \Zend\Form\Element\Text('mail_to');
+            $toElement->setAttributes(array('id' => 'mail_to', 'class' => 'mail-subject form-control'));
+            $toElement->setValue('p.mamakin@gmail.com, revival.church.kiev@gmail.com');
+            $toElement->setLabelAttributes(array('class' => 'control-label col-sm-1'));
+            $toElement->setLabel("Получатель (укажите через запятую):");
+
+            $subjectElement = new \Zend\Form\Element\Text('mail_subject');
+            $subjectElement->setAttributes(array('id' => 'mail_subject', 'class' => 'mail-subject form-control'));
+            $subjectElement->setLabelAttributes(array('class' => 'control-label col-sm-1'));
+            $subjectElement->setLabel("Тема:");
+
+            $bodyElement = new \Zend\Form\Element\Textarea('mail_body');
+            $bodyElement->setAttributes(array('id' => 'mail_body', 'class' => 'mail-body form-control'));
+            $bodyElement->setLabelAttributes(array('class' => 'control-label col-sm-1'));
+            $bodyElement->setLabel("Текст:");
+            $bodyElement->setValue($bodyText);
+
+            $isEmbedElement = new \Zend\Form\Element\Checkbox('is_embed_content');
+            $isEmbedElement->setValue(true);
+            $isEmbedElement->setAttributes(array('id' => 'is_embed_content', 'class' => 'is-embed-content'));
+            $isEmbedElement->setLabelAttributes(array('class' => 'control-label'));
+            $isEmbedElement->setLabel("Встроить файлы в письмо, если возможно?");
+
+            $isAddCounterToNamesElement = new \Zend\Form\Element\Checkbox('is_add_counter_to_names');
+            $isAddCounterToNamesElement->setValue(true);
+            $isAddCounterToNamesElement->setAttributes(array('id' => 'is_add_counter_to_names', 'class' => 'is-embed-content'));
+            $isAddCounterToNamesElement->setLabelAttributes(array('class' => 'control-label'));
+            $isAddCounterToNamesElement->setLabel("Переименовать файлы, добавив порядковый номер?");
+
+            $buttonComposeEmail = new \Zend\Form\Element\Button('send');
+            $buttonComposeEmail->setLabel("Отправить");
+            $buttonComposeEmail->setAttributes(array('type' => 'submit', 'id' => 'content_email_send', 'class' => 'btn btn-success'));
+            ?>
+
+			<?= $this->form()->openTag($form); ?>
+
+			<div class="form-horizontal row">
+
+				<div class="form-group">
+                    <?= $this->formLabel($toElement); ?>
+
+					<div class="col-sm-5">
+                        <?= $this->formInput($toElement); ?>
+					</div>
+				</div>
+				<div class="form-group">
+                    <?= $this->formLabel($subjectElement); ?>
+
+					<div class="col-sm-5">
+                        <?= $this->formInput($subjectElement); ?>
+					</div>
+				</div>
+
+				<div class="form-group">
+                    <?= $this->formLabel($bodyElement); ?>
+
+					<div class="col-sm-5">
+                        <?= $this->formTextarea($bodyElement); ?>
+					</div>
+				</div>
+
+                <?php if(count($contents) > 0): ?>
+				<div class="form-group">
+					<div class="col-sm-offset-1 col-sm-5">
+						<h4>Файлы:</h4>
+                        <?= $this->partial('songbook/partials/content-items.phtml', array('contents' => $contents, 'contentService' => $contentService, 'isCreateHidden' => true)); ?>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-offset-1 col-sm-5">
+						<ul class="list-unstyled">
+                        <li><?= $this->formCheckbox($isEmbedElement); ?>
+                        <?= $this->formLabel($isEmbedElement); ?></li>
+						<li><?= $this->formCheckbox($isAddCounterToNamesElement); ?>
+                                <?= $this->formLabel($isAddCounterToNamesElement); ?></li>
+						</ul>
+					</div>
+				</div>
+				<?php endif; ?>
+				<div class="form-group">
+					<div class="col-sm-offset-1 col-sm-5">
+						<?= $this->formButton($buttonComposeEmail); ?>
+					</div>
+				</div>
+			</div>
+
+            <?= $this->form()->closeTag($form); ?>
         </div>
     </div>
 </div>

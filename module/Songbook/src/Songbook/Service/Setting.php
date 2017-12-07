@@ -7,15 +7,23 @@
  */
 namespace Songbook\Service;
 
-class Setting
-{
-    /**
-     * @var \Zend\ServiceManager\ServiceLocatorInterface;
-     */
-    protected $sl;
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    protected $em;
+use User\Entity\User;
+
+class Setting extends AbstractService
+{
+    public function getValue(User $user, $name)
+    {
+        $item = $this->getEntityManager()
+            ->getRepository('Songbook\Entity\Setting')
+            ->findOneBy(array('name' => $name, 'user' => $user));
+
+        if($item) {
+            return $item->value;
+        } else {
+            return null;
+        }
+    }
+
+
 }

@@ -1,9 +1,25 @@
-
 <h3>Видео:</h3>
-
-<div class="form-row">
-	<label for="content_url_video_add" class="col-sm-2">Url:</label>
-	<div class="col-sm-10">
-		<input type="url" id="content_url_video_add" class="form-control"/>
+<?php
+/** @var \Songbook\Service\Content $contentService */
+/** @var \Songbook\Entity\Content $videos */
+?>
+<div class="form-group form-horizontal">
+	<label for="content_video" class="control-label col-sm-2">Url:</label>
+	<div class="col-sm-9">
+		<input type="hidden" id="song_id" value="<?= $song->id ?>"/>
+		<input type="url" id="content_video" class="form-control"/>
 	</div>
+	<div class="col-sm-1"><button class="btn btn-primary" id="content_video_action_add">Добавить</button></div>
 </div>
+<div class="row">
+
+	<ul class="list-unstyled content-video-list col-sm-12" id="content_video_list">
+        <?php foreach ($videos as $item): ?>
+            <?php $service = $contentService->getContentLinkService($item); ?>
+            <?php if ($service && ($code = $service->getEmbedCode($item))): ?>
+				<li data-content-id="<?= $item->id ?>" class="list_item"><div class="video-container"><?= $code; ?></div><span class="control control_remove fa fa-trash"></span></li>
+            <?php endif; ?>
+        <?php endforeach; ?>
+	</ul>
+</div>
+

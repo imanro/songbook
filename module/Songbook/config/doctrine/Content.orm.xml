@@ -10,23 +10,16 @@ http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 		</id>
 		<field name="type" type="enum" nullable="true">
 			<options>
-				<option name="range">header,inline,link</option>
+				<option name="range">header,inline,link,gdrive_cloud_file</option>
 				<option name="default">inline</option>
 			</options>
 		</field>
 		<field name="create_time" type="timestamp" column-definition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP"/>
 		<field name="url" type="string" length="255" nullable="true"/>
 		<field name="content" type="text" nullable="true" column-definition="MEDIUMTEXT"/>
-		<field name="is_favorite" type="boolean" nullable="true"/>
-
-		<!--
-		<one-to-one field="songDefaultHeader" target-entity="Song" inversed-by="defaultHeader">
-			<join-column name="song_id" referenced-column-name="id" />
-		</one-to-one>
-		<one-to-one field="songFavoriteHeader" target-entity="Song" inversed-by="favoriteHeader">
-			<join-column name="song_id" referenced-column-name="id" />
-		</one-to-one>
-		-->
+		<field name="is_favorite" type="boolean" nullable="false" column-definition="TINYINT(1) NOT NULL DEFAULT 0"/>
+		<field name="file_name" type="text" nullable="true" column-definition="VARCHAR(400)"/>
+		<field name="mime_type" type="text" nullable="true" column-definition="VARCHAR(255)"/>
 
 		<many-to-one field="song" target-entity="Song" inversed-by="content" fetch="EXTRA_LAZY"/>
 		<many-to-one field="user" target-entity="User\Entity\User" />

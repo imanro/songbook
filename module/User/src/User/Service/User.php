@@ -23,7 +23,7 @@ class User
     protected $em;
 
     /**
-     * @return array
+     * @return \User\Entity\User
      */
     public function getCurrentUser()
     {

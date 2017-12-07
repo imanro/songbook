@@ -1,2 +1,51 @@
 <?php /* @var $song \Songbook\Entity\Song */?>
-<?php var_dump($song->id ); ?>
+
+<div class="song-view col-sm-8">
+<h1><?= $song->favoriteHeader ? $song->favoriteHeader->content : $song->defaultHeader->content; ?></h1>
+    <dl class="attributes">
+        <dt>Добавлена</dt>
+        <dd><?= date('Y-m-j', $song->create_time) ?></dd>
+        <?php if (mb_strlen($song->copyright) > 0): ?>
+            <dt>Copyright</dt>
+            <dd><?= $song->copyright; ?></dd>
+        <?php endif; ?>
+
+    </dl>
+    <?php
+    $otherTitles = [];
+    ?>
+    <?php foreach($song->content as $content): ?>
+        <?php if($content->type == \Songbook\Entity\Content::TYPE_HEADER && ( is_null($song->favoriteHeader ) || $content->id != $song->favoriteHeader->id )): ?>
+            <?php $otherTitles []= $content ?>
+            <?php endif; ?>
+            <?php endforeach; ?>
+
+    <?php if(count($otherTitles) > 0): ?>
+        <h3>Другие названия:</h3>
+    <ul class="list content-block">
+        <?php foreach($otherTitles as $content): ?>
+            <li><?= $content->content; ?></li>
+    <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+
+	<div class="row">
+	<div class="col-sm-12">
+    <?= $this->partial('songbook/partials/content-video.phtml', array('song' => $song, 'videos' => $videos, 'contentService' => $contentService)); ?>
+	</div>
+	</div>
+
+	<div class="row">
+	<div class="col-sm-12">
+    <?php if (count($files)): ?>
+		<h3>Файлы:</h3>
+		<ul class="list content-items">
+            <?php foreach ($files as $file): ?>
+				<li><a href="https://drive.google.com/open?id=<?= $file->content ?>"><img src="/img/mime-types/<?= $file->getMimeIconName() ?>" class="mime-icon" /> <?= $file->file_name ?></a></li>
+            <?php endforeach; ?>
+		</ul>
+    <?php endif; ?>
+	</div>
+	</div>
+</div>
+<div class="col-sm-4 clearfix"></div>

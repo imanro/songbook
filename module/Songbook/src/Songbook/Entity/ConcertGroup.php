@@ -1,18 +1,24 @@
 <?php
 namespace Songbook\Entity;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 
-
+/**
+ * Class ConcertGroup
+ *
+ * @package Songbook\Entity
+ *
+ * @property int $id
+ * @property string $name
+ * @property \Songbook\Entity\Concert $concert
+ * @property \Songbook\Entity\ConcertItem[] $concertItems
+ */
 class ConcertGroup extends AbstractEntity
 {
-    /**
-     * @var int
-     */
     protected $id;
 
     protected $name;
+
     protected $concert;
+
     private $concertItems;
 
     /**
@@ -23,7 +29,7 @@ class ConcertGroup extends AbstractEntity
     public function exchangeArray ($data = array())
     {
         if (! empty($data['name'])) {
-            $this->order = $data['name'];
+            $this->name = $data['name'];
         }
 
         if (! empty($data['concert'])) {

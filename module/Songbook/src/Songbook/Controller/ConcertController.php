@@ -2,18 +2,13 @@
 
 namespace Songbook\Controller;
 
-use Songbook\Entity\Song;
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Doctrine\ORM\EntityManager;
-
 /**
  * @author manro
  */
-class ConcertController extends AbstractActionController {
+class ConcertController extends FrontendController {
 
      /**
-     * @var DoctrineORMEntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $em;
 
@@ -21,6 +16,11 @@ class ConcertController extends AbstractActionController {
      * @var \Songbook\Service\Song
      */
     protected $songService;
+
+    /**
+     * @var \Songbook\Service\Content
+     */
+    protected $contentService;
 
     /**
      * @var \Songbook\Service\Concert
@@ -78,16 +78,6 @@ class ConcertController extends AbstractActionController {
      */
     public function compositeAction()
     {
-        // js requirements
-        $this->getViewHelper('HeadScript')->appendFile('/assets/bower_components/jquery-ui/jquery-ui.min.js');
-        $this->getViewHelper('HeadScript')->appendFile('/assets/bower_components/jquery-impromptu/dist/jquery-impromptu.min.js');
-        $this->getViewHelper('HeadScript')->appendFile('/assets/bower_components/jquery-sortable/source/js/jquery-sortable-min.js');
-        $this->getViewHelper('HeadLink')->appendStylesheet('/assets/bower_components/jquery-impromptu/dist/jquery-impromptu.min.css');
-
-        $this->getViewHelper('HeadLink')->appendStylesheet('/assets/bower_components/jquery-ui/themes/base/jquery-ui.min.css');
-
-        $this->getViewHelper('HeadScript')->appendFile('/assets/js/songbook/composite.js');
-
         $id = $this->params('id', null);
 
         $concertService = $this->getConcertService();
@@ -114,6 +104,37 @@ class ConcertController extends AbstractActionController {
         );
     }
 
+    public function contentProcessAction()
+    {
+        $id = $this->params('id', null);
+
+        $concertService = $this->getConcertService();
+        $songService = $this->getSongService();
+        $contentService = $this->getContentService();
+
+        if ($id) {
+            $concert = $concertService->getById($id);
+
+        } else {
+            // get current user
+            $userService = $this->getUserService();
+            $user = $userService->getCurrentUser();
+
+            // get active profile
+            $profileService = $this->getProfileService();
+            $profile = $profileService->getCurrentByUser($user);
+
+            $concert = $concertService->getLastConcert($profile);
+        }
+
+        // we need: all songs from this concert with content here
+        return array(
+            'concert' => $concert,
+            'songService' => $songService,
+            'contentService' => $contentService
+        );
+    }
+
     /**
      * @return \Doctrine\ORM\EntityManager
      */
@@ -128,7 +149,7 @@ class ConcertController extends AbstractActionController {
     }
 
     /**
-     * @return \Sonbook\Model\SongService
+     * @return \Songbook\Service\Song
      */
     protected function getSongService ()
     {
@@ -140,7 +161,20 @@ class ConcertController extends AbstractActionController {
     }
 
     /**
-     * @return \Sonbook\Model\ConcertService
+     * @return \Songbook\Service\Content
+     */
+    protected function getContentService ()
+    {
+        if (is_null($this->contentService)){
+            $sm = $this->getServiceLocator();
+            $this->contentService = $sm->get('Songbook\Service\Content');
+        }
+
+        return $this->contentService;
+    }
+
+    /**
+     * @return \Songbook\Service\Concert
      */
     protected function getConcertService ()
     {
@@ -152,7 +186,7 @@ class ConcertController extends AbstractActionController {
     }
 
     /**
-     * @return \Sonbook\Model\UserService
+     * @return \User\Service\User
      */
     protected function getUserService ()
     {
@@ -166,7 +200,7 @@ class ConcertController extends AbstractActionController {
 
 
     /**
-     * @return \Sonbook\Model\ProfileService
+     * @return \Songbook\Service\Profile
      */
     protected function getProfileService ()
     {
@@ -177,15 +211,4 @@ class ConcertController extends AbstractActionController {
 
         return $this->profileService;
     }
-
-    /**
-     * @param string $helperName
-     */
-    protected function getViewHelper ($helperName)
-    {
-        return $this->getServiceLocator()
-            ->get('viewhelpermanager')
-            ->get($helperName);
-    }
-
 }

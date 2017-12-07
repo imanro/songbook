@@ -1,13 +1,18 @@
 <?php
 namespace Songbook\Entity;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="concert_item")
+ * Class ConcertItem
+ * @package Songbook\Entity
+ *
+ * @property int $id
+ * @property int $create_time
+ * @property int $order
+ * @property \Songbook\Entity\Concert $concert
+ * @property \Songbook\Entity\Song $song
+ * @property \Songbook\Entity\ConcertGroup $concertGroup
  */
-class ConcertItem
+class ConcertItem extends AbstractEntity
 {
     protected $id;
 
@@ -15,45 +20,11 @@ class ConcertItem
 
     protected $order;
 
-    private $concert;
+    protected $concert;
 
+    protected $song;
 
-    private $song;
-
-    private $concertGroup;
-
-
-    /**
-     * Magic getter to expose protected properties.
-     *
-     * @param string $property
-     * @return mixed
-     */
-    public function __get ($property)
-    {
-        return $this->$property;
-    }
-
-    /**
-     * Magic setter to save protected properties.
-     *
-     * @param string $property
-     * @param mixed $value
-     */
-    public function __set ($property, $value)
-    {
-        $this->$property = $value;
-    }
-
-    /**
-     * Convert the object to an array.
-     *
-     * @return array
-     */
-    public function getArrayCopy ()
-    {
-        return get_object_vars($this);
-    }
+    protected $concertGroup;
 
     /**
      * Populate from an array.
@@ -76,5 +47,4 @@ class ConcertItem
 
         return $this;
     }
-
 }

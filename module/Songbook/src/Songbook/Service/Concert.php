@@ -1,13 +1,7 @@
 <?php
 namespace Songbook\Service;
-use Zend\Db\Sql\Sql;
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\ResultSet\ResultSet;
-use Doctrine\ORM\EntityManager;
-use PDO;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Songbook\Entity;
+use Songbook\Entity\Concert as ConcertEntity;
 
 class Concert
 {
@@ -26,6 +20,11 @@ class Concert
      * @var \User\Service\User
      */
     protected $userService;
+
+    /**
+     * @var \Songbook\Service\Song
+     */
+    protected $songService;
 
     /**
      * @var \Songbook\Service\Profile
@@ -61,6 +60,8 @@ class Concert
 
     /**
      * @param int $id
+     *
+     * @return \Songbook\Entity\ConcertItem
      */
     public function getConcertItemById ($id)
     {
@@ -72,6 +73,34 @@ class Concert
         }
 
         return $item;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Songbook\Entity\ConcertGroup
+     */
+    public function getConcertGroupById ($id)
+    {
+        $em = $this->getEntityManager();
+        $item = $em->find('Songbook\Entity\ConcertGroup', $id);
+
+        if (is_null($item)) {
+            throw new \Exception('ConcertGroup is not found');
+        }
+
+        return $item;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function getConcertItemsByIds (array $ids)
+    {
+        $em = $this->getEntityManager();
+        $items = $em->getRepository('Songbook\Entity\ConcertItem')->findById($ids);
+
+        return $items;
     }
 
     public function deleteConcertItem(\Songbook\Entity\ConcertItem $item)
@@ -116,6 +145,65 @@ class Concert
         $em->flush();
 
         return $concert;
+    }
+
+    /**
+     * @param \Songbook\Entity\Concert $concert
+     * @param array $concertItems
+     * @param string $concertGroupName
+     *
+     * @return \Songbook\Entity\ConcertGroup
+     */
+    public function createConcertGroup(\Songbook\Entity\Concert $concert, array $concertItems, $concertGroupName = '')
+    {
+        $concertGroup = new \Songbook\Entity\ConcertGroup;
+
+        $concertGroup->exchangeArray(array(
+                'name' => $concertGroupName,
+                'concert' => $concert,
+                'concertItems' => $concertItems
+            )
+        );
+
+        $em = $this->getEntityManager();
+
+        $em->persist($concertGroup);
+
+        foreach($concertItems as $concertItem){
+            $concertItem->concertGroup = $concertGroup;
+            $em->persist($concertItem);
+        }
+
+        $em->flush();
+
+        return $concertGroup;
+    }
+
+    public function deleteConcertGroup(\Songbook\Entity\ConcertGroup $item)
+    {
+        $em = $this->getEntityManager();
+        $em->remove($item);
+        $em->flush();
+        return true;
+    }
+
+    public function addConcertItemIntoConcertGroup(\Songbook\Entity\ConcertItem $concertItem, \Songbook\Entity\ConcertGroup $concertGroup)
+    {
+        $concertItem->concertGroup = $concertGroup;
+        $em = $this->getEntityManager();
+        $em->persist($concertItem);
+        $em->flush();
+        return $concertItem;
+    }
+
+
+    public function deleteConcertItemFromConcertGroups(\Songbook\Entity\ConcertItem $concertItem)
+    {
+        $concertItem->concertGroup = null;
+        $em = $this->getEntityManager();
+        $em->persist($concertItem);
+        $em->flush();
+        return $concertItem;
     }
 
     public function createConcertItem(\Songbook\Entity\Concert $concert, \Songbook\Entity\Song $song, array $data = null )
@@ -286,7 +374,7 @@ class Concert
 
 
     /**
-     * @param \Zend\ServiceManagerServiceLocatorInterface $sl
+     * @param \Zend\ServiceManager\ServiceLocatorInterface $sl
      */
     public function setServiceLocator (ServiceLocatorInterface $sl)
     {
@@ -314,6 +402,45 @@ class Concert
         return $this->em;
     }
 
+    public function formatSongListString(ConcertEntity $concert, $isIncludeConcertGroups = false)
+    {
+        $songService = $this->getSongService();
+
+        $songs = $songService->getCollectionByConcert($concert);
+
+        $lines = array();
+        $prevConcertGroup = null;
+        /* @var $prevConcertGroup \Songbook\Entity\ConcertGroup */
+        $counter = 0;
+
+        foreach($songs as $song) {
+            $concertGroup = $song->currentConcertItem->concertGroup;
+            /* @var $concertGroup \Songbook\Entity\ConcertGroup */
+            if($isIncludeConcertGroups) {
+                if (!is_null($concertGroup) && (is_null($prevConcertGroup) || $prevConcertGroup->id != $concertGroup->id)) {
+
+                    if($counter > 0){
+                        $lines []= '';
+                    }
+
+                    if(strlen((string)$concertGroup->name) > 0) {
+                        $lines [] = '=== ' . $concertGroup->name . ' ===';
+                    } else {
+                        $lines [] = '===========';
+                    }
+                    $lines []= '';
+                }
+
+                $lines [] = ($counter + 1) . '. ' . (( $song->favoriteHeader )? $song->favoriteHeader->content : $song->defaultHeader->content );
+            }
+
+            $prevConcertGroup = $concertGroup;
+            $counter++;
+        }
+
+        return implode("\n", $lines);
+    }
+
     /**
      * @return \User\Service\User
      */
@@ -327,7 +454,20 @@ class Concert
     }
 
     /**
-     * @return \Sonbook\Service\Profile
+     * @return \Songbook\Service\Song
+     */
+    protected function getSongService ()
+    {
+        if (! $this->profileService) {
+            $sm = $this->getServiceLocator();
+            $this->songService = $sm->get('Songbook\Service\Song');
+        }
+
+        return $this->songService;
+    }
+
+    /**
+     * @return \Songbook\Service\Profile
      */
     protected function getProfileService ()
     {
